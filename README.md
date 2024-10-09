@@ -1,5 +1,10 @@
 # Spectronaut-nf
 
+# Download Spectronaut-nf
+```
+git clone https://github.com/BenCollinsLab/Spectronaut-nf
+```
+
 ## Input requirements
 1. Make sure that all the raw files are available in raw_d folder inside the Project directory
 2. Keep the proteome database (bgsfasta format) required for the search in the Project directory
