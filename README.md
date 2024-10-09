@@ -1,6 +1,6 @@
 # Spectronaut-nf
 
-How to execute the nextflow workflow?
+How to deplot the nextflow workflow directly to the HPC using SLURM?
 ```
 nextflow run main.nf -c nextflow.config -resume
 ```
