@@ -1,6 +1,6 @@
 # Spectronaut-nf
 
-# Download Spectronaut-nf
+## Download Spectronaut-nf
 ```
 git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ```
