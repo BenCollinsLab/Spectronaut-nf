@@ -25,7 +25,7 @@ process COMBINE_PSAR{
         -setTemp ${params.tmp_dir}\
 	-sad ${params.psar_lib}\
 	-k ${params.psar_lib}/${params.JOB}\
-        -o ${params.output_dir}\
+        -o ${params.lib_output}\
         -n ${params.JOB}\
         -fasta ${params.FASTA}\
         ${params.EXT_PSAR ?: ''}\
