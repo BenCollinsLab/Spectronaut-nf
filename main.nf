@@ -24,7 +24,14 @@ if (!tmp_dir.exists()) {
 	}
 
 workflow {
-    // Create_dir() // Create out and tmp directories
+
+    log.info "Pipeline Name: ${workflow.manifest.name}"
+    log.info "Author: ${workflow.manifest.author}"
+    log.info "Description: ${workflow.manifest.description}"
+    log.info "HomePage: ${workflow.manifest.homePage}"
+    log.info "Main Script: ${workflow.manifest.mainScript}"
+    log.info "Nextflow Version Required: ${workflow.manifest.nextflowVersion}"
+    log.info "Pipeline Version: ${workflow.manifest.version}"
 
     // Load .d rawfiles from the directory
     rawfiles = Channel.fromPath("${params.rawfile_dir}/*.d", type: 'dir', checkIfExists: true)
@@ -41,6 +48,46 @@ workflow {
 
     // WORKFLOW_LIB(spec_bin_channel, license_channel, rawfile_mapped)
 
-    COMBINE_PSAR(spec_bin_channel, license_channel, params.psar_lib)
+    // COMBINE_PSAR(spec_bin_channel, license_channel, params.psar_lib)
+
+    // WORKFLOW_DIA(spec_bin_channel, license_channel, rawfile_mapped)
+
+    // snefiles = Channel.fromPath("${params.dia_output}/*.sne", type: 'file', checkIfExists: true)
+    //           .ifEmpty { error "Cannot find any Spectronaut SNE files on ${params.dia_output}"}.map { it.toString() }
+
+    // snefiles.subscribe { println "Found SNE file: $it"}
+
+    // snefiles.collect().set { snefile_mapped }  // Set mapped SNE files
+
+    // COMBINE_SNE(spec_bin_channel, license_channel, params.dia_output)
+
+    // Step 1: WORKFLOW_LIB
+    WORKFLOW_LIB(spec_bin_channel, license_channel, rawfile_mapped)
+        .set { lib_output }
+
+    // Step 2: COMBINE_PSAR
+    lib_output
+        .flatMap { COMBINE_PSAR(spec_bin_channel, license_channel, params.psar_lib) }
+        .set { psar_output }
+
+    // Step 3: WORKFLOW_DIA
+    psar_output
+        .flatMap { WORKFLOW_DIA(spec_bin_channel, license_channel, rawfile_mapped) }
+        .set { dia_output }
+
+    // Step 4: Handle SNE files after WORKFLOW_DIA
+    dia_output
+        .flatMap { Channel.fromPath("${params.dia_output}/*.sne", type: 'file', checkIfExists: true) }
+        .ifEmpty { error "Cannot find any Spectronaut SNE files on ${params.dia_output}" }
+        .map { it.toString() }
+        .set { snefile_mapped }
+
+    snefile_mapped
+        .subscribe { println "Found SNE file: $it" }
+
+    // Step 5: COMBINE_SNE
+    snefile_mapped
+        .flatMap { COMBINE_SNE(spec_bin_channel, license_channel, params.dia_output) }
+
 }
 
