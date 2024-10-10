@@ -33,7 +33,7 @@ process WORKFLOW_LIB {
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
         -r ${params.baseDir}/raw_d/${rawfile}\
-        -o ${params.output_dir}\
+        -o ${params.lib_output}\
         -a ${params.psar_lib}/${rawfile.getBaseName()}\
         -n ${rawfile.getBaseName()}\
         -fasta ${params.FASTA}\
