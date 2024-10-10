@@ -8,7 +8,7 @@ if (!dia_dir.exists()) {
 
 process WORKFLOW_DIA{
 
-    label 'SN19_nf_dia_search'
+    jobName = 'SN19_nf_dia_search'
     errorStrategy 'retry'
 
     module 'dotnet/6.0.16'
@@ -30,7 +30,7 @@ process WORKFLOW_DIA{
         -r ${params.baseDir}/raw_d/${rawfile}\
         -o ${params.dia_output}\
 	-a ${params.LIB_IN}\
-        -n ${params.JOB}\
+        -n ${rawfile.getBaseName()}\
         -fasta ${params.FASTA}\
         ${params.EXT_PSAR ?: ''}\
         ${params.PROP_SEARCH ?: ''}\
