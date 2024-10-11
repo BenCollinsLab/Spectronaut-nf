@@ -15,5 +15,5 @@ Edit the `nextflow.config` file as per the requirements using `vim` editor in li
 
 ## How to deploy the nextflow workflow directly to the HPC using SLURM?
 ```
-nextflow run main.nf -c nextflow.config -resume
+nextflow run main.nf -c nextflow.config -with-dag -resume -with-report -with-trace
 ```
