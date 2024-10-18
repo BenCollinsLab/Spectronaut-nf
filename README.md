@@ -1,4 +1,5 @@
 # Spectronaut-nf
+The parallel execution attribute of nextflow is used here increase the Spectronaut DIA analysis search speed in High-Performance Cluster (HPC) computing approach.
 
 ## Download Spectronaut-nf
 ```
