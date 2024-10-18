@@ -1,5 +1,5 @@
 # Spectronaut-nf
-The parallel execution attribute of nextflow is used here increase the Spectronaut DIA analysis search speed in High-Performance Cluster (HPC) computing approach.
+A nextflow pipeline to carry Spectronaut DIA analysis with its parallel execution attribute. Here, individual LC-MS/MS derived proteomic rawfiles are queued for Spectronaut search separately with the help of nextflow parallel execution attribute and the results are combined in the end to form a experiment wide output. This increases the Spectronaut DIA analysis search speed owing to the use of multiple High Performance Computing (HPC) nodes with the help of SLURM batch scheduler.
 
 ## Download Spectronaut-nf
 ```
