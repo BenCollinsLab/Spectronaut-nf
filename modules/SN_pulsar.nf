@@ -8,8 +8,7 @@ if (!libs_dir.exists()) {
 
 process WORKFLOW_LIB {
 
-    jobName = 'SN19_nf_lib'
-    errorStrategy 'retry'
+    label 'SN19_nf_lib'
 
     module 'dotnet/6.0.16'
 
@@ -19,7 +18,10 @@ process WORKFLOW_LIB {
     path rawfile               // Third input: One rawfile from the raw_d folder
 
     output:
-    path out, emit: output     // Output directory for each rawfile
+    path "${rawfile.getBaseName()}.psar", emit: psar_lib // Emit the .psar file created for each rawfile
+
+    // Use publishDir to save the output to the out_lib directory
+    publishDir "${params.psar_lib}", mode: 'copy'
 
     // Define output and error logs using task variables
     // error = "logs/${task.process}.${task.id}.err"
@@ -27,20 +29,19 @@ process WORKFLOW_LIB {
 
     script:
     """
+
         echo "Processing rawfile: ${rawfile}"
 
-        dotnet ${SPEC_BIN} -activate ${LICENSE}
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
         -r ${params.baseDir}/raw_d/${rawfile}\
         -o ${params.lib_output}\
-        -a ${params.psar_lib}/${rawfile.getBaseName()}\
+        -a ${rawfile.getBaseName()}\
         -n ${rawfile.getBaseName()}\
         -fasta ${params.FASTA}\
         ${params.EXT_PSAR ?: ''}\
         ${params.PROP_SEARCH ?: ''}\
         ${params.PROP_LIB ?: ''}
 
-        dotnet ${SPEC_BIN} -deactivate
     """
 }
