@@ -52,8 +52,8 @@ workflow {
 	
 	lib_output = WORKFLOW_LIB(Spectronaut, SN_license, rawfile_mapped)
 	kit_file = COMBINE_PSAR(Spectronaut, SN_license, lib_output.collect())
-	WORKFLOW_DIA(Spectronaut, SN_license, kit_file.collect(), rawfile_mapped)
-	COMBINE_SNE(Spectronaut, SN_license, WORKFLOW_DIA.out.collect())
+	dia_output = WORKFLOW_DIA(Spectronaut, SN_license, kit_file.collect(), rawfile_mapped)
+	single_sne = COMBINE_SNE(Spectronaut, dia_output.collect())
 
 }
 
