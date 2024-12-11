@@ -6,7 +6,7 @@ if (!dia_dir.exists()) {
         dia_dir.mkdirs()
         }
 
-process WORKFLOW_DIA{
+process WORKFLOW_DIA {
 	
 	label 'SN19_nf_dia_search'
 	
@@ -26,8 +26,9 @@ process WORKFLOW_DIA{
     	script:
 	"""
 	
+	sleep \$((RANDOM:0:60))
+
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir} -r ${params.baseDir}/raw_d/${rawfile} -o ${params.dia_output}	-a ${params.LIB_IN}\
-        -n ${rawfile.getBaseName()} -fasta ${params.FASTA} ${params.EXT_PSAR ?: ''} ${params.PROP_SEARCH ?: ''} ${params.PROP_LIB ?: ''}
-	
+	-n ${rawfile.getBaseName()} -fasta ${params.FASTA} ${params.EXT_PSAR ?: ''} ${params.PROP_SEARCH ?: ''} ${params.PROP_LIB ?: ''}
 	"""
 }
