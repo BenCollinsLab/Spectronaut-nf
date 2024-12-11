@@ -9,11 +9,11 @@ process COMBINE_SNE{
 	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
-	val LICENSE                // Second input: license key
-	val "sne_files"
+	// val LICENSE                // Second input: license key
+	// val "sne_files"
 
 	// output:
-	// path "${params.JOB}.sne", emit: merged_sne     // Output directory for each rawfile
+	path "${params.JOB}"   // Output directory for each rawfile
 
 	// publishDir "${params.dia_output}", mode: 'copy'
 
