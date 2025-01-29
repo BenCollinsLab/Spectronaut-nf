@@ -4,7 +4,7 @@ process COMBINE_PSAR{
 
     label 'SN19_nf_combine_lib'
 
-    module 'dotnet/6.0.16'
+    // module 'dotnet/6.0.16'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
