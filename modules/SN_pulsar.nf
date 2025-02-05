@@ -30,6 +30,8 @@ process WORKFLOW_LIB {
     script:
     """
         echo "Processing rawfile: ${rawfiles}"
+	
+	dotnet ${SPEC_BIN} -activate ${LICENSE}
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
@@ -69,10 +71,12 @@ process WORKFLOW_LIB_BATCH {
     script:
     """
         echo "Processing rawfile: ${rawfiles}"
+	
+	dotnet ${SPEC_BIN} -activate ${LICENSE}	
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
-        ${rawfiles.collect { "-r ${params.baseDir}/raw_d/${it}" }.join(' ')}\
+        ${rawfiles.collect { "-r ${params.rawfile_dir}/${it}" }.join(' ')}\
         -o ${params.lib_output}\
         -a ${task.index}\
         -n ${rawfiles.collect { it.getBaseName()}.join('_')}\
