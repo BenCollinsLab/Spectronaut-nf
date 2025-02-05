@@ -64,10 +64,16 @@ workflow {
 		rawfiles_for_lib?.count()?.subscribe { println "Loaded $it raw files for processing" }
 		
 	} else {
+		// def rawfile_format = RAWFILE_FORMAT(params.rawfile_dir).stdout
+		
+		// println "Rawfile format: ${rawfile_format}"
+	
+		def rawfile_patterns = ["*.d", "*.raw", "*.RAW", "*.wiff", "*.mzML"]
+
 		// Load .d rawfiles from the directory
 		rawfiles_for_lib = Channel.fromPath("${params.rawfile_dir}/*.d", type: 'dir', checkIfExists: true)
                		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
-		
+
 		// rawfile_count = Channel.of("${params.rawfile_dir}/*.d", type: 'dir', checkIfExists: true).count()
 		
 		// rawfile_count.subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
@@ -130,16 +136,16 @@ workflow {
 
 	if (params.REPORT && params.COND_SETUP) {
 		log.info "Executing Combining SNEs with Condition and Report schema inputs"
-		single_sne = COMBINE_SNE_REPORT_COND(Spectronaut, dia_output.collect())	
+		single_sne = COMBINE_SNE_REPORT_COND(Spectronaut, SN_license, dia_output.collect())	
 	} else if (params.REPORT) {
 		log.info "Executing Combining SNEs with Report schema input"
-		single_sne = COMBINE_SNE_REPORT(Spectronaut, dia_output.collect())
+		single_sne = COMBINE_SNE_REPORT(Spectronaut, SN_license, dia_output.collect())
 	} else if (params.COND_SETUP) {
 		log.info "Executing Combining SNEs with Conditions input"
-		single_sne = COMBINE_SNE_COND(Spectronaut, dia_output.collect())
+		single_sne = COMBINE_SNE_COND(Spectronaut, SN_license, dia_output.collect())
 	} else {
 		log.info "Executing Combining SNEs without any Conditions or Report schema inputs"
-		single_sne = COMBINE_SNE(Spectronaut, dia_output.collect())
+		single_sne = COMBINE_SNE(Spectronaut, SN_license, dia_output.collect())
 	}
 }
 
