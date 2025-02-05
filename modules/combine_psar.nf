@@ -18,6 +18,8 @@ process COMBINE_PSAR{
 
     script:
     """
+	dotnet ${SPEC_BIN} -activate ${LICENSE}
+
 	dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
 	-sad ${params.psar_lib}\
