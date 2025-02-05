@@ -28,6 +28,8 @@ process WORKFLOW_DIA {
     	script:
 	"""
 	bash ${baseDir}/scripts/random_sleep.sh
+	
+	dotnet ${SPEC_BIN} -activate ${LICENSE}	
 
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir} -r ${params.baseDir}/raw_d/${rawfile} -o ${params.dia_output}	-a ${params.LIB_IN}\
 	-n ${rawfile.getBaseName()} -fasta ${params.FASTA} ${params.EXT_PSAR ?: ''} ${params.PROP_SEARCH ?: ''} ${params.PROP_LIB ?: ''}
