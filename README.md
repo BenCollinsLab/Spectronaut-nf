@@ -16,7 +16,7 @@ Edit the `nextflow.config` file as per the requirements using `vim` editor in li
 
 ## How to deploy the nextflow workflow directly to the HPC using SLURM?
 ```
-nextflow -bg run main.nf -c nextflow.config -with-report -with-trace >> nextflow_cmd.log
+nextflow -bg run main.nf -c nextflow.config -with-timeline -with-trace >> nextflow_cmd.log
 ```
 If the nextflow pipeline crashes/brakes inbetween, you can resume the searches with the help of `-resume` command.
 
