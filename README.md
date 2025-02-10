@@ -25,9 +25,9 @@ This will be followed by setting up process-specific partition requirements such
 * **Custom report templates**
 
 #### Additional parameters
-* Random raw file sampling for library generation
-* Set batch of raw files for each library generation process
-* Exclude raw file/s based on common name pattern for DIA search
+* **Random raw file sampling for library generation**
+* **Set batch of raw files for each library generation process**
+* **Exclude raw file/s based on common name pattern for DIA search**
 
 ## How to deploy the nextflow workflow directly to the HPC?
 ```
