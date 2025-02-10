@@ -22,12 +22,17 @@ executor = 'slurm'
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 #### DIA search inputs
-Job name
-raw file directory/path
-Fasta file/format
-Additional search parameters in .PROP file
-Condition Setup file
-Custom report templates
+1. Job name
+2. Raw file directory/path
+3. Fasta file/format
+4. Additional search parameters in .PROP file
+5. Condition Setup file
+6. Custom report templates
+
+#### Additional parameters
+1. Random raw file sampling for library generation
+2. Set batch of raw files for each library generation process
+3. Exclude raw file/s based on common name pattern for DIA search
 
 ## How to deploy the nextflow workflow directly to the HPC?
 ```
