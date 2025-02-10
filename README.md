@@ -1,5 +1,5 @@
 # Spectronaut-nf
-A nextflow pipeline to carry Spectronaut DIA analysis with its parallel execution attribute. Here, individual LC-MS/MS derived proteomic rawfiles are queued for Spectronaut search separately with the help of nextflow parallel execution attribute and the results are combined in the end to form a experiment wide output. This increases the Spectronaut DIA analysis search speed owing to the use of multiple High Performance Computing (HPC) nodes with the help of SLURM batch scheduler.
+A nextflow pipeline to carry Spectronaut DIA analysis with its parallel execution attribute. Here, individual LC-MS/MS derived proteomic rawfiles are queued for Spectronaut search separately with the help of nextflow parallel execution attribute and the results are combined in the end to form a experiment wide output. This increases the Spectronaut DIA analysis search speed owing to the use of multiple High Performance Computing (HPC) nodes with the help of batch schedulers (ex: SLURM).
 
 ## Download Spectronaut-nf
 ```
@@ -14,7 +14,7 @@ git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ### Edit the `nextflow.config`
 Edit the `nextflow.config` file as per the requirements using `vim` editor in linux systems or any text editor tools such as [Notepad++](https://notepad-plus-plus.org/) or [sublime](https://www.sublimetext.com/3) etc. 
 
-## How to deploy the nextflow workflow directly to the HPC using SLURM?
+## How to deploy the nextflow workflow directly to the HPC?
 ```
 nextflow -bg run main.nf -c nextflow.config -with-timeline -with-trace >> nextflow_cmd.log
 ```
