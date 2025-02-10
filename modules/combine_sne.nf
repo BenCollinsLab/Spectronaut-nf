@@ -19,7 +19,6 @@ process COMBINE_SNE {
 	// cp -r ${params.dia_output}/*/*.sne ${params.dia_output}
 	script:
 	"""
-	
 	dotnet ${SPEC_BIN} -activate ${LICENSE}
 
 	dotnet ${SPEC_BIN} manageSNE --merge -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB} ${params.PROP_SEARCH ?: ''}
@@ -47,7 +46,7 @@ process COMBINE_SNE_REPORT_COND {
         // cp -r ${params.dia_output}/*/*.sne ${params.dia_output}
         script:
         """
-		dotnet ${SPEC_BIN} -activate ${LICENSE}	
+	dotnet ${SPEC_BIN} -activate ${LICENSE}	
 
         dotnet ${SPEC_BIN} manageSNE --merge -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB} -rs ${params.REPORT} -con ${params.COND_SETUP}\
 		${params.PROP_SEARCH ?: ''}
@@ -75,7 +74,7 @@ process COMBINE_SNE_REPORT {
         // cp -r ${params.dia_output}/*/*.sne ${params.dia_output}
         script:
         """
-		dotnet ${SPEC_BIN} -activate ${LICENSE}
+	dotnet ${SPEC_BIN} -activate ${LICENSE}
 	
         dotnet ${SPEC_BIN} manageSNE --merge -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB} -rs ${params.REPORT}\
 	 ${params.PROP_SEARCH ?: ''}
@@ -103,7 +102,7 @@ process COMBINE_SNE_COND {
         // cp -r ${params.dia_output}/*/*.sne ${params.dia_output}
         script:
         """
-		dotnet ${SPEC_BIN} -activate ${LICENSE}
+	dotnet ${SPEC_BIN} -activate ${LICENSE}
 	
         dotnet ${SPEC_BIN} manageSNE --merge -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB} -con ${params.COND_SETUP}\
 	 ${params.PROP_SEARCH ?: ''}
