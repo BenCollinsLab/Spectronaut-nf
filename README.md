@@ -21,6 +21,14 @@ executor = 'slurm'
 ```
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
+#### DIA search inputs
+Job name
+raw file directory/path
+Fasta file/format
+Additional search parameters in .PROP file
+Condition Setup file
+Custom report templates
+
 ## How to deploy the nextflow workflow directly to the HPC?
 ```
 nextflow -bg run main.nf -c nextflow.config -with-timeline -with-trace >> nextflow_cmd.log
