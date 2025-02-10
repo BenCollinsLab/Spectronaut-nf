@@ -14,11 +14,12 @@ git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ### Edit the `nextflow.config`
 Edit the `nextflow.config` file as per the requirements using `vim` editor in linux systems or any text editor tools such as [Notepad++](https://notepad-plus-plus.org/) or [sublime](https://www.sublimetext.com/3) etc. 
 
-#### Define batch scheduler
-Change the name of the batch scheduler inside `process` in `nextflow.config`:
+#### Batch scheduler and its parameters 
+Set the batch scheduler used in your HPC platform inside `process` in `nextflow.config`. 
 ```
 executor = 'slurm'
 ```
+This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 ## How to deploy the nextflow workflow directly to the HPC?
 ```
