@@ -7,7 +7,7 @@ git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ```
 
 ## Edit the `nextflow.config`
-Edit the `nextflow.config` file as per the requirements using `vim` editor in linux systems or any text editor tools such as [Notepad++](https://notepad-plus-plus.org/) or [sublime](https://www.sublimetext.com/3) etc. 
+Edit the `nextflow.config` file as per the requirements using `vim` or `nano` editor in linux systems or any text editor tools such as [Notepad++](https://notepad-plus-plus.org/) or [sublime](https://www.sublimetext.com/3) etc. 
 
 ### Batch scheduler and its parameters 
 Set the batch scheduler used in your HPC platform inside `process`. 
