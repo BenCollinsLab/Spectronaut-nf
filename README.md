@@ -17,17 +17,17 @@ executor = 'slurm'
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 #### DIA search inputs
-1. Job name
-2. Raw file directory/path: Make sure that all the raw files are available in raw_d folder inside the Project directory
-4. Fasta file/format: Keep the proteome database (bgsfasta format) required for the search in the Project directory
-5. Additional search parameters in .PROP file: If your search requires additional parameters or any changes in the default parameters, define the parameters under Settings tab of the Spectronaut GUI and export it in the .prop format. The exported .prop file needs to be stored in the Project directory and the path to it should be included in the nextflow.config file
-6. Condition Setup file
-7. Custom report templates
+* Job name
+* Raw file directory/path: Make sure that all the raw files are available in raw_d folder inside the Project directory
+* Fasta file/format: Keep the proteome database (bgsfasta format) required for the search in the Project directory
+* Additional search parameters in .PROP file: If your search requires additional parameters or any changes in the default parameters, define the parameters under Settings tab of the Spectronaut GUI and export it in the .prop format. The exported .prop file needs to be stored in the Project directory and the path to it should be included in the nextflow.config file
+* Condition Setup file
+* Custom report templates
 
 #### Additional parameters
-1. Random raw file sampling for library generation
-2. Set batch of raw files for each library generation process
-3. Exclude raw file/s based on common name pattern for DIA search
+* Random raw file sampling for library generation
+* Set batch of raw files for each library generation process
+* Exclude raw file/s based on common name pattern for DIA search
 
 ## How to deploy the nextflow workflow directly to the HPC?
 ```
