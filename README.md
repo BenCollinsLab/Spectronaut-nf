@@ -6,17 +6,17 @@ A nextflow pipeline to carry Spectronaut DIA analysis with its parallel executio
 git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ```
 
-### Edit the `nextflow.config`
+## Edit the `nextflow.config`
 Edit the `nextflow.config` file as per the requirements using `vim` editor in linux systems or any text editor tools such as [Notepad++](https://notepad-plus-plus.org/) or [sublime](https://www.sublimetext.com/3) etc. 
 
-#### Batch scheduler and its parameters 
+### Batch scheduler and its parameters 
 Set the batch scheduler used in your HPC platform inside `process`. 
 ```
 executor = 'slurm'
 ```
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
-#### DIA search inputs
+### DIA search inputs
 * **Job name**
 * **Raw file directory/path:** Make sure that all the raw files are available in raw_d folder inside the Project directory
 * **Fasta file/format:** Keep the proteome database (bgsfasta format) required for the search in the Project directory
@@ -24,7 +24,7 @@ This will be followed by setting up process-specific partition requirements such
 * **Condition Setup file**
 * **Custom report templates**
 
-#### Additional parameters
+### Additional parameters
 * **Random raw file sampling for library generation**
 * **Set batch of raw files for each library generation process**
 * **Exclude raw file/s based on common name pattern for DIA search**
