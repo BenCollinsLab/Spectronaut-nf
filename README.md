@@ -15,7 +15,7 @@ git clone https://github.com/BenCollinsLab/Spectronaut-nf
 Edit the `nextflow.config` file as per the requirements using `vim` editor in linux systems or any text editor tools such as [Notepad++](https://notepad-plus-plus.org/) or [sublime](https://www.sublimetext.com/3) etc. 
 
 #### Define batch scheduler
-Change the name of the batch scheduler here:
+Change the name of the batch scheduler inside `process` in `nextflow.config`:
 ```
 executor = 'slurm'
 ```
