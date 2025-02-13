@@ -64,15 +64,12 @@ workflow {
 		rawfiles_for_lib?.count()?.subscribe { println "Loaded $it raw files for processing" }
 		
 	} else {
-		// def rawfile_format = RAWFILE_FORMAT(params.rawfile_dir).stdout
-		
-		// println "Rawfile format: ${rawfile_format}"
-	
-		def rawfile_patterns = ["*.d", "*.raw", "*.RAW", "*.wiff", "*.mzML"]
 
 		// Load .d rawfiles from the directory
-		rawfiles_for_lib = Channel.fromPath("${params.rawfile_dir}/*.d", type: 'dir', checkIfExists: true)
+		rawfiles_for_lib = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
                		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
+
+		rawfiles_for_lib?.count()?.subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
 
 		// rawfile_count = Channel.of("${params.rawfile_dir}/*.d", type: 'dir', checkIfExists: true).count()
 		
@@ -113,7 +110,7 @@ workflow {
 	// lib_output = WORKFLOW_LIB(Spectronaut, SN_license, rawfile_batches)
 	kit_file = COMBINE_PSAR(Spectronaut, SN_license, lib_output.collect())
 	
-	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.d", type: 'dir', checkIfExists: true)
+	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
 	rawfiles_for_dia.set { rawfiles_for_dia_mapped }
 
