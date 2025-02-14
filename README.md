@@ -17,6 +17,7 @@ executor = 'slurm'
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 ### DIA search inputs
+Define or modify all DIA search related inputs under `params`.
 * **Job name**
 * **Raw file directory/path:** Make sure that all the raw files are available in raw_d folder inside the Project directory
 * **Fasta file/format:** Keep the proteome database (bgsfasta format) required for the search in the Project directory
