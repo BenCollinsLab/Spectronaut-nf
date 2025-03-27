@@ -127,8 +127,7 @@ workflow {
 		log.info "Exclude pattern not defined. Considering all rawfiles."
 		filtered_rawfiles = rawfiles_for_dia
 	}
-	
-	
+		
 	dia_output = WORKFLOW_DIA(Spectronaut, SN_license, kit_file.collect(), filtered_rawfiles)
 
 	if (params.REPORT && params.COND_SETUP) {
