@@ -15,7 +15,7 @@ process WORKFLOW_LIB {
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
-    path rawfiles               // Third input: One rawfile from the raw_d folder
+    path rawfile               // Third input: One rawfile from the raw_d folder
 
     output:
     path "${rawfile.getBaseName()}.psar", emit: psar_lib // Emit the .psar file created for each rawfile
@@ -29,7 +29,7 @@ process WORKFLOW_LIB {
 
     script:
     """
-        echo "Processing rawfile: ${rawfiles}"
+        echo "Processing rawfile: ${rawfile}"
 	
 	dotnet ${SPEC_BIN} -activate ${LICENSE}
 
@@ -42,7 +42,7 @@ process WORKFLOW_LIB {
         -fasta ${params.FASTA}\
         ${params.EXT_PSAR ?: ''}\
         ${params.PROP_SEARCH ?: ''}\
-        ${params.PROP_LIB ?: ''}
+	${params.PROP_DIA ? "-rs ${params.PROP_DIA}" : ""}
 	
     """
 }
@@ -83,7 +83,7 @@ process WORKFLOW_LIB_BATCH {
         -fasta ${params.FASTA}\
         ${params.EXT_PSAR ?: ''}\
         ${params.PROP_SEARCH ?: ''}\
-        ${params.PROP_LIB ?: ''}
+        ${params.PROP_DIA ? "-rs ${params.PROP_DIA}" : ""}
 
         echo "Nextflow Task ID: ${task.index}"
     """
