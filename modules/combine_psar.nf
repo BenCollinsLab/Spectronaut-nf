@@ -29,7 +29,7 @@ process COMBINE_PSAR{
         -fasta ${params.FASTA}\
         ${params.EXT_PSAR ?: ''}\
         ${params.PROP_SEARCH ?: ''}\
-        ${params.PROP_LIB ?: ''} 
+        ${params.PROP_DIA ? "-rs ${params.PROP_DIA}" : ""}
     """
 
 }
