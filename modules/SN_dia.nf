@@ -31,7 +31,12 @@ process WORKFLOW_DIA {
 	
 	dotnet ${SPEC_BIN} -activate ${LICENSE}	
 
-	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir} -r ${params.rawfile_dir}/${rawfile} -o ${params.dia_output}	-a ${params.LIB_IN}\
-	-n ${rawfile.getBaseName()} -fasta ${params.FASTA} ${params.EXT_PSAR ?: ''} ${params.PROP_SEARCH ?: ''} ${params.PROP_LIB ?: ''}
+	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir} -r ${params.rawfile_dir}/${rawfile}\
+	-o ${params.dia_output}\
+	-a ${params.LIB_IN}\
+	-n ${rawfile.getBaseName()}\
+	-fasta ${params.FASTA}\
+	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
+	${params.PROP_DIA ? "-s ${params.PROP_DIA}" : ""}
 	"""
 }
