@@ -38,5 +38,45 @@ process WORKFLOW_DIA {
 	-fasta ${params.FASTA}\
 	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
 	${params.PROP_DIA ? "-s ${params.PROP_DIA}" : ""}
+	
+	"""
+}
+
+process WORKFLOW_DIA_BATCH {
+	label 'SN19_nf_dia_search'
+	
+	// module 'dotnet/6.0.16'
+	input:
+	val SPEC_BIN               // First input: path to Spectronaut binary
+	val LICENSE                // Second input: license key
+	path psar_lib
+	path rawfiles              // Third input: One rawfile from the raw_d folder
+	
+	output:
+	path "${params.JOB}.kit", emit: kit_file
+	
+	// Define output and error logs using task variables
+	// error = "logs/${task.process}.${task.id}.err"
+	// output = "logs/${task.process}.${task.id}.out"
+	
+	script:
+	"""
+	echo "Processing rawfiles: ${rawfiles}"
+	
+	bash ${baseDir}/scripts/random_sleep.sh
+	
+	dotnet ${SPEC_BIN} -activate ${LICENSE}
+	
+	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir}\
+	${rawfiles.collect { "-r ${params.rawfile_dir}/${it}" }.join(' ')}\
+	-o ${params.dia_output}\
+	-a ${params.LIB_IN}\
+	-n ${rawfiles.collect { it.getBaseName()}.join('_')}\
+	-fasta ${params.FASTA}\
+	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
+	${params.PROP_DIA ? "-s ${params.PROP_DIA}" : ""}
+	
+	echo "Nextflow Task ID: ${task.index}"
+
 	"""
 }
