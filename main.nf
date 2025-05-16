@@ -4,17 +4,20 @@ include { COMBINE_PSAR	} from './modules/combine_psar.nf'
 include { WORKFLOW_LIB	} from './modules/SN_pulsar.nf'
 include { WORKFLOW_LIB_BATCH } from './modules/SN_pulsar.nf'
 include { WORKFLOW_DIA	} from './modules/SN_dia.nf'
+include { WORKFLOW_DIA_BATCH } from './modules/SN_dia.nf'
+include { COMBINE_SNE_REPORT	} from './modules/combine_sne.nf'
 include { COMBINE_SNE	} from './modules/combine_sne.nf'
-include { COMBINE_SNE_REPORT_COND } from './modules/combine_sne.nf'
-include { COMBINE_SNE_REPORT } from './modules/combine_sne.nf'
-include { COMBINE_SNE_COND } from './modules/combine_sne.nf'
+include { MERGE_SNE	} from './modules/merge_sne.nf'
+include { MERGE_SNE_REPORT_COND } from './modules/merge_sne.nf'
+include { MERGE_SNE_REPORT } from './modules/merge_sne.nf'
+include { MERGE_SNE_COND } from './modules/merge_sne.nf'
 include { SAMPLING_RAWFILES  } from './modules/rawfile_sampling.nf'
 
 //checking if logs dir exists
-def logs_dir = new File("${params.log_dir}")
-if (!logs_dir.exists()) {
-        logs_dir.mkdirs()
-        }
+//def logs_dir = new File("${params.log_dir}")
+//if (!logs_dir.exists()) {
+//        logs_dir.mkdirs()
+//        }
 
 //checking if output dir exists
 def out_dir = new File("${params.lib_output}")
@@ -113,35 +116,71 @@ workflow {
 	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
 	rawfiles_for_dia.set { rawfiles_for_dia_mapped }
-
+	
 	// Check if excludePattern is defined and filter rawfiles accordingly
 	if (params.excludePattern) {
 		log.info "Exclude pattern defined: '${params.excludePattern}'"
-		filtered_rawfiles = rawfiles_for_dia.filter { !it.contains(params.excludePattern) }.ifEmpty {
-			println "No rawfiles matched the exclude pattern. Using all rawfiles."
-			rawfiles
-		filtered_rawfiles.subscribe { println "Filtered rawfile: $it" }
-
+		filtered_rawfiles = rawfiles_for_dia.filter { !it.contains(params.excludePattern) }
+		.ifEmpty 
+		{ println "No rawfiles matched the exclude pattern. Using all rawfiles."
+		return rawfiles_for_dia
 		}
+		filtered_rawfiles.subscribe { println "Filtered rawfile: $it" }
 	} else {
 		log.info "Exclude pattern not defined. Considering all rawfiles."
 		filtered_rawfiles = rawfiles_for_dia
 	}
-		
-	dia_output = WORKFLOW_DIA(Spectronaut, SN_license, kit_file.collect(), filtered_rawfiles)
+	
+	
+	if (batchSize > 1) {
+		batchSize_dia = batchSize * 2
+                filtered_rawfiles
+                .buffer(size: batchSize_dia, remainder: true) // Group into batches of user-defined size
+                .ifEmpty { error "No batches were produced. Check the rawfile count." }
+                .set { rawfile_batches_dia }
+                log.info "Processing raw files in batches of ${batchSize_dia}"
+                rawfile_batches_dia.subscribe { println "Processing a batch of $it for DIA search" }
+                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, kit_file.collect(), rawfile_batches_dia)
 
-	if (params.REPORT && params.COND_SETUP) {
-		log.info "Executing Combining SNEs with Condition and Report schema inputs"
-		single_sne = COMBINE_SNE_REPORT_COND(Spectronaut, SN_license, dia_output.collect())	
+        } else {
+                log.info "Processing raw files individually (batch size = 1)"
+                filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it" }
+                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, kit_file.collect(), filtered_rawfiles)
+        }
+	
+	
+	dia_output.view { "DIA Output: $it" }
+	
+	merged_input = dia_output.collect()
+
+	def rawDir = new File(params.rawfile_dir).getAbsoluteFile()
+	def validExtensions = ['.raw', '.RAW', '.wiff', '.mzML']
+	def fileCount = rawDir.listFiles()?.count { f ->
+		(f.isFile() && validExtensions.any { f.name.endsWith(it) }) ||
+		(f.isDirectory() && f.name.endsWith('.d'))
+	} ?: 0
+	
+	println "Number of raw files: $fileCount"
+
+	if (fileCount > 3 && params.REPORT) {
+		log.info "INFO: SNE files will be subjected to COMBINE SNE with Report schema input as there are more than ${fileCount} raw files"
+		COMBINE_SNE_REPORT(Spectronaut, SN_license, merged_input)
+	} else if (fileCount > 150) {
+		log.info "INFO: SNE files will be subjected to COMBINE SNE as there are more than ${params.rawfile_count} raw files"
+		COMBINE_SNE(Spectronaut, SN_license, merged_input)
+	
+        } else if (params.REPORT && params.COND_SETUP) {
+		log.info "INFO: Executing merge SNEs with Condition and Report schema inputs"
+		MERGE_SNE_REPORT_COND(Spectronaut, SN_license, merged_input)
 	} else if (params.REPORT) {
-		log.info "Executing Combining SNEs with Report schema input"
-		single_sne = COMBINE_SNE_REPORT(Spectronaut, SN_license, dia_output.collect())
+		log.info "INFO: Executing merge SNEs with Report schema input"
+		MERGE_SNE_REPORT(Spectronaut, SN_license, merged_input)
 	} else if (params.COND_SETUP) {
-		log.info "Executing Combining SNEs with Conditions input"
-		single_sne = COMBINE_SNE_COND(Spectronaut, SN_license, dia_output.collect())
+		log.info "INFO: Executing merge SNEs with Conditions input"
+		MERGE_SNE_COND(Spectronaut, SN_license, merged_input)
 	} else {
-		log.info "Executing Combining SNEs without any Conditions or Report schema inputs"
-		single_sne = COMBINE_SNE(Spectronaut, SN_license, dia_output.collect())
+		log.info "INFO: Executing merge SNEs without any Conditions or Report schema inputs"
+		MERGE_SNE(Spectronaut, SN_license, merged_input)
 	}
 }
 
