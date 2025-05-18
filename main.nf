@@ -42,43 +42,37 @@ workflow {
 	log.info "Pipeline Version: ${workflow.manifest.version}"
 	
 	if (params.sample_size) {
-		SAMPLING_RAWFILES(params.rawfile_dir, params.sample_size, 0)
+		log.info "INFO: Executing random sampling"
+		sampled_tsv = SAMPLING_RAWFILES(params.rawfile_dir, params.sample_size, 0)
 		
-		// Ensure that the Rawfiles_for_library.tsv file exists before trying to read it
-		def tsvFile = new File("${params.rawfile_dir}/Rawfiles_for_library.tsv")
-		if (!tsvFile.exists()) {
-			error "Rawfiles_for_library.tsv not found at ${params.rawfile_dir}"
-		}
-
-		// Load sampled rawfiles from Rawfiles_for_library.tsv
-		rawfiles_for_lib = Channel
-			.fromPath("${params.rawfile_dir}/Rawfiles_for_library.tsv", checkIfExists: true)
-			.splitCsv(header: false, sep: '\n')  // Split the file by lines
-			.map { it[0] }  // Extract the file path (the first column)
-			.ifEmpty { error "Cannot find any rawfile paths in Rawfiles_for_library.tsv" }
+		// When the TSV file is emitted, read and process it
+		rawfiles_for_lib = sampled_tsv
+				.map { it.toString() }
+				.map { tsv_path ->
+					println "[DEBUG] TSV path received: $tsv_path"
+					return file(tsv_path).text
+						.readLines()
+						.collect { it.trim() }
+						.findAll { it }
+				}
+				.flatten()
+				.ifEmpty { error "TSV file exists but has no usable paths." }
 		
-		rawfiles_for_lib?.println { "Rawfile: $it" }
+		// Print the loaded paths
+		rawfiles_for_lib.subscribe { println "Rawfile: $it" }
 		
-		// Validate the channel
-		if (!rawfiles_for_lib) {
-			error "Cannot find any Bruker rawfile in ${params.rawfile_dir}"
-		}
-		
-		rawfiles_for_lib?.count()?.subscribe { println "Loaded $it raw files for processing" }
+		// Count and print how many rawfiles were loaded
+		rawfiles_for_lib.count().subscribe { println "Loaded $it raw files for processing" }
 		
 	} else {
-
-		// Load .d rawfiles from the directory
+		// Load .d and other rawfiles from the directory
 		rawfiles_for_lib = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
-               		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
-
-		rawfiles_for_lib?.count()?.subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
-
-		// rawfile_count = Channel.of("${params.rawfile_dir}/*.d", type: 'dir', checkIfExists: true).count()
-		
-		// rawfile_count.subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
-	}
+					.ifEmpty { error "Cannot find any Bruker rawfile in ${params.rawfile_dir}" }
+					.map { it.toString() }
 	
+		rawfiles_for_lib.count().subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
+	}
+
 	// Static parameter channels
 	Spectronaut = Channel.value(params.spec_bin)
 	SN_license = Channel.value(params.license)
@@ -125,7 +119,7 @@ workflow {
 		{ println "No rawfiles matched the exclude pattern. Using all rawfiles."
 		return rawfiles_for_dia
 		}
-		filtered_rawfiles.subscribe { println "Filtered rawfile: $it" }
+		// filtered_rawfiles.subscribe { println "Filtered rawfile: $it" }
 	} else {
 		log.info "Exclude pattern not defined. Considering all rawfiles."
 		filtered_rawfiles = rawfiles_for_dia
@@ -144,7 +138,7 @@ workflow {
 
         } else {
                 log.info "Processing raw files individually (batch size = 1)"
-                filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it" }
+                filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it for DIA search" }
                 dia_output = WORKFLOW_DIA(Spectronaut, SN_license, kit_file.collect(), filtered_rawfiles)
         }
 	
@@ -162,7 +156,7 @@ workflow {
 	
 	println "Number of raw files: $fileCount"
 
-	if (fileCount > 3 && params.REPORT) {
+	if (fileCount > 150 && params.REPORT) {
 		log.info "INFO: SNE files will be subjected to COMBINE SNE with Report schema input as there are more than ${fileCount} raw files"
 		COMBINE_SNE_REPORT(Spectronaut, SN_license, merged_input)
 	} else if (fileCount > 150) {
