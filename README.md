@@ -17,7 +17,7 @@ executor = 'slurm'
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 ### DIA search inputs
-![250528_spectronaut-nf_nextflow config](https://github.com/user-attachments/assets/ccec4baf-ccd6-4113-b19a-a04d7e979cbc)
+![250707_spectronaut-nf_nextflow config](https://github.com/user-attachments/assets/e051beab-b6c1-4dcd-a973-917aa7aab348)
 Define or modify all DIA search related inputs under `params`.
 * **Job name**
 * **Raw file directory/path:** Make sure that all the raw files are available in raw_d folder inside the Project directory
@@ -29,6 +29,7 @@ Define or modify all DIA search related inputs under `params`.
 ### Additional parameters
 * **Random raw file sampling for library generation**
 * **Set batch of raw files for each library generation process**
+
 * **Exclude raw file/s based on common name pattern for DIA search**
 
 ## How to deploy the nextflow workflow directly to the HPC?
