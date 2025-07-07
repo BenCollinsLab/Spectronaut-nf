@@ -1,6 +1,9 @@
 # Spectronaut-nf
 A [nextflow](https://www.nextflow.io/) pipeline to carry [Spectronaut](https://biognosys.com/software/spectronaut/) DIA analysis with its parallel execution attribute. Here, individual LC-MS/MS derived proteomic rawfiles are queued for [Spectronaut](https://biognosys.com/software/spectronaut/) search separately with the help of [nextflow](https://www.nextflow.io/docs/latest/reference/config.html#executor) parallel execution attribute and the results are combined in the end to form a experiment wide output. This increases the [Spectronaut](https://biognosys.com/software/spectronaut/) DIA analysis search speed owing to the use of multiple High Performance Computing (HPC) nodes with the help of batch schedulers (ex: SLURM).
 
+### Spectronaut-nf workflow
+![spectronaut_nextflow_workflow](https://github.com/user-attachments/assets/08a7660f-75d4-496b-b773-86cd12f84c87)
+
 ## Download Spectronaut-nf
 ```
 git clone https://github.com/BenCollinsLab/Spectronaut-nf
@@ -37,6 +40,3 @@ Define or modify all DIA search related inputs under `params`.
 nextflow -bg run main.nf -c nextflow.config -with-timeline -with-trace >> nextflow_cmd.log
 ```
 If the nextflow pipeline crashes/brakes inbetween, you can resume the searches with the help of `-resume` command.
-
-### Spectronaut-nf workflow
-![spectronaut_nextflow_workflow](https://github.com/user-attachments/assets/08a7660f-75d4-496b-b773-86cd12f84c87)
