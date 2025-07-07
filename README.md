@@ -17,6 +17,7 @@ executor = 'slurm'
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 ### DIA search inputs
+![250528_spectronaut-nf_nextflow config](https://github.com/user-attachments/assets/ccec4baf-ccd6-4113-b19a-a04d7e979cbc)
 Define or modify all DIA search related inputs under `params`.
 * **Job name**
 * **Raw file directory/path:** Make sure that all the raw files are available in raw_d folder inside the Project directory
@@ -37,4 +38,4 @@ nextflow -bg run main.nf -c nextflow.config -with-timeline -with-trace >> nextfl
 If the nextflow pipeline crashes/brakes inbetween, you can resume the searches with the help of `-resume` command.
 
 ### Spectronaut-nf workflow
-![image](https://github.com/user-attachments/assets/cb48fb58-d4b7-4c3a-b8ee-02437acaa712)
+![spectronaut_nextflow_workflow](https://github.com/user-attachments/assets/08a7660f-75d4-496b-b773-86cd12f84c87)
