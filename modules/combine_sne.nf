@@ -9,13 +9,14 @@ process COMBINE_SNE {
         input:
         val SPEC_BIN               // First input: path to Spectronaut binary
         val LICENSE                // Second input: license key
+	val sne_files
 
         // output:
         // path "${params.JOB}"   // Output directory for each rawfile
         
         script:
         """
-	cp -r ${params.dia_output}/*/*.sne ${params.dia_output}
+	cp -rf ${params.dia_output}/*/*.sne ${params.dia_output}
 
         dotnet ${SPEC_BIN} -activate ${LICENSE}
 
@@ -34,14 +35,14 @@ process COMBINE_SNE_REPORT {
         input:
         val SPEC_BIN               // First input: path to Spectronaut binary
         val LICENSE                // Second input: license key
-        // val "sne_files"
+        val sne_files
 
         // output:
-        path "${params.JOB}"   // Output directory for each rawfile
+        // path "${params.JOB}"   // Output directory for each rawfile
 
         script:
         """
-	cp -r ${params.dia_output}/*/*.sne ${params.dia_output}
+	cp -rf ${params.dia_output}/*/*.sne ${params.dia_output}
 	
         dotnet ${SPEC_BIN} -activate ${LICENSE}
 
