@@ -71,6 +71,7 @@ process WORKFLOW_DIA_BATCH {
 	${rawfiles.collect { "-r ${params.rawfile_dir}/${it}" }.join(' ')}\
 	-o ${params.dia_output}\
 	-a ${params.LIB_IN}\
+	-n ${task.index}\
 	-fasta ${params.FASTA}\
 	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
 	${params.PROP_DIA ? "-s ${params.PROP_DIA}" : ""}
