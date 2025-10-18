@@ -1,0 +1,51 @@
+## Required
+
+JOB_NAME: "250930_THP1_MZ1_Kuiper_PTM_Probing_Search_SN20.2"
+spec_bin: "/users/3054755/bin/spectronaut/Spectronaut_20.2.250922.92449/binaries/Spectronaut/bin/SpectronautCMD.dll"
+license: "/users/3054755/license/spec_license_no_var.txt"
+rawfile_dir: "/mnt/scratch2/users/3058937/MZ1_THP1/RAWFILES/"
+FASTA: "uniprotkbHUMAN20240104.bgsfasta"
+
+## Optional (can be left out, defaults kick in)
+# sample_size: 104
+batch_size: 8
+excludePattern: "pooled"
+
+COND_SETUP: "ConditionSetup.tsv"
+# REPORT: "/scratch/data/PrecursorFragmentInfo.rs"
+PROP_DIA: "Kuiper_PTM_Probing_Search.prop"
+
+### Number of Parallel Searches ###
+executor_queueSize: 10
+
+### Process-specific Resource Allocation ####
+
+#Random Sampling
+random_sampling_queue: 'k2-hipri,k2-fmipr'
+random_sampling_cpus: 4
+random_sampling_memory: '4 GB'
+random_sampling_time: '03:00:00'
+
+#Pulsar search
+SN_nf_pulsar_queue: 'k2-medpri,k2-fmipr'
+SN_nf_pulsar_cpus: 64
+SN_nf_pulsar_memory: '128 GB'
+SN_nf_pulsar_time: '24:00:00'
+
+#Library generation from combining multiple PSAR
+SN_nf_combine_psar_queue: 'k2-medpri,k2-fmipr'
+SN_nf_combine_psar_cpus: 64
+SN_nf_combine_psar_memory: '256 GB'
+SN_nf_combine_psar_time: '24:00:00'
+
+#Raw file/Batch-specific DIA search
+SN_nf_dia_search_queue: 'k2-medpri,k2-fmipr'
+SN_nf_dia_search_cpus: 64                                
+SN_nf_dia_search_memory: '128 GB'
+SN_nf_dia_search_time: '24:00:00'
+
+#Merging or Combining SNEs
+SN_nf_combine_sne_queue: 'k2-medpri,k2-fmipr'
+SN_nf_combine_sne_cpus: 64
+SN_nf_combine_sne_memory: '256 GB'
+SN_nf_combine_sne_time: '24:00:00'
