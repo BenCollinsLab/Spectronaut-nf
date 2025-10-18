@@ -8,18 +8,21 @@ if (!dia_dir.exists()) {
 
 process WORKFLOW_DIA {
 	
-	label 'SN19_nf_dia_search'
+	label 'SN_nf_dia_search'
+	container = null  // always run Spectronaut outside container
 	
 	// module 'dotnet/6.0.16'
 	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
 	val LICENSE                // Second input: license key
+	val FASTA
 	path psar_lib
 	path rawfile               // Third input: One rawfile from the raw_d folder
+	val PROP_DIA
 	
 	output:
-	path "${params.JOB}.kit", emit: kit_file    // Output directory for each rawfile
+	path "${params.JOB_NAME}.kit", emit: kit_file    // Output directory for each rawfile
 	
 	// publishDir "${params.dia_output}", mode: 'copy'
 	
@@ -35,30 +38,34 @@ process WORKFLOW_DIA {
 	-o ${params.dia_output}\
 	-a ${params.LIB_IN}\
 	-n ${rawfile.getBaseName()}\
-	-fasta ${params.FASTA}\
+	-fasta ${FASTA}\
 	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
-	${params.PROP_DIA ? "-s ${params.PROP_DIA}" : ""}
+	${PROP_DIA ? "-s ${PROP_DIA}" : ""}
 	
 	"""
 }
 
 process WORKFLOW_DIA_BATCH {
-	label 'SN19_nf_dia_search'
 	
+	label 'SN_nf_dia_search'
+	container = null  // always run Spectronaut outside container	
 	// module 'dotnet/6.0.16'
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
 	val LICENSE                // Second input: license key
+	val FASTA
 	path psar_lib
 	path rawfiles              // Third input: One rawfile from the raw_d folder
-	
+	val PROP_DIA
+
 	output:
-	path "${params.JOB}.kit", emit: kit_file
+	path "${params.JOB_NAME}.kit", emit: kit_file
 	
 	// Define output and error logs using task variables
 	// error = "logs/${task.process}.${task.id}.err"
 	// output = "logs/${task.process}.${task.id}.out"
 	// -n ${rawfiles.collect { it.getBaseName()}.join('_')}
+
 	script:
 	"""
 	echo "Processing rawfiles: ${rawfiles}"
@@ -72,9 +79,9 @@ process WORKFLOW_DIA_BATCH {
 	-o ${params.dia_output}\
 	-a ${params.LIB_IN}\
 	-n ${task.index}\
-	-fasta ${params.FASTA}\
+	-fasta ${FASTA}\
 	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
-	${params.PROP_DIA ? "-s ${params.PROP_DIA}" : ""}
+	${PROP_DIA ? "-s ${PROP_DIA}" : ""}
 	
 	echo "Nextflow Task ID: ${task.index}"
 
