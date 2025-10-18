@@ -13,12 +13,6 @@ include { MERGE_SNE_REPORT } from './modules/merge_sne.nf'
 include { MERGE_SNE_COND } from './modules/merge_sne.nf'
 include { SAMPLING_RAWFILES  } from './modules/rawfile_sampling.nf'
 
-//checking if logs dir exists
-//def logs_dir = new File("${params.log_dir}")
-//if (!logs_dir.exists()) {
-//        logs_dir.mkdirs()
-//        }
-
 //checking if output dir exists
 def out_dir = new File("${params.lib_output}")
 if (!out_dir.exists()) {
@@ -30,6 +24,24 @@ def tmp_dir = new File("${params.tmp_dir}")
 if (!tmp_dir.exists()) {
         tmp_dir.mkdirs()
 	}
+
+// --- Normalize file-based params ---
+def resolveFilePath(val) {
+    if (!val) return null
+    def f = file(val)
+    return f.exists() ? f.toAbsolutePath().toString() : file("${launchDir}/${val}").toAbsolutePath().toString()
+}
+
+// Required
+def spec_bin = resolveFilePath(params.spec_bin)
+def license = resolveFilePath(params.license)
+def FASTA   = resolveFilePath(params.FASTA)
+
+// Optional (normalize only if user defined something other than null)
+def EXT_PSAR    = (params.EXT_PSAR && !params.EXT_PSAR.contains("null")) ? resolveFilePath(params.EXT_PSAR) : ""
+def PROP_DIA    = (params.PROP_DIA && !params.PROP_DIA.contains("null")) ? resolveFilePath(params.PROP_DIA) : ""
+def COND_SETUP  = (params.COND_SETUP && !params.COND_SETUP.contains("null")) ? resolveFilePath(params.COND_SETUP) : ""
+def REPORT = (params.REPORT && !params.REPORT.contains("null")) ? resolveFilePath(params.REPORT) : ""
 
 workflow {
 
@@ -67,15 +79,15 @@ workflow {
 	} else {
 		// Load .d and other rawfiles from the directory
 		rawfiles_for_lib = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
-					.ifEmpty { error "Cannot find any Bruker rawfile in ${params.rawfile_dir}" }
+					.ifEmpty { error "No Bruker/raw/wiff/mzML files found in ${params.rawfile_dir}" }
 					.map { it.toString() }
 	
 		rawfiles_for_lib.count().subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
 	}
 
 	// Static parameter channels
-	Spectronaut = Channel.value(params.spec_bin)
-	SN_license = Channel.value(params.license)
+	Spectronaut = Channel.value(spec_bin)
+	SN_license = Channel.value(license)
 	
 	// Process each raw file in parallel
 	
@@ -90,7 +102,7 @@ workflow {
 		.set { rawfile_batches }
 		log.info "Processing raw files in batches of ${params.batch_size}"
 		rawfile_batches.subscribe { println "Processing batch: $it" }
-		lib_output = WORKFLOW_LIB_BATCH(Spectronaut, SN_license, rawfile_batches)
+		lib_output = WORKFLOW_LIB_BATCH(Spectronaut, SN_license, FASTA, rawfile_batches, EXT_PSAR, PROP_DIA)
 
 	} else {
 		rawfiles_for_lib
@@ -98,14 +110,14 @@ workflow {
 		.set { rawfile_mapped }
 		log.info "Processing raw files individually (batch size = 1)"
 		rawfile_mapped.subscribe { println "Processing Mapped rawfile: $it" }
-		lib_output = WORKFLOW_LIB(Spectronaut, SN_license, rawfile_mapped)
+		lib_output = WORKFLOW_LIB(Spectronaut, SN_license, FASTA, rawfile_mapped, EXT_PSAR, PROP_DIA)
 	}
 
 	rawfile_dir = Channel.value(params.rawfile_dir)
 	sample_size = Channel.value(params.sample_size)
 	
 	// lib_output = WORKFLOW_LIB(Spectronaut, SN_license, rawfile_batches)
-	kit_file = COMBINE_PSAR(Spectronaut, SN_license, lib_output.collect())
+	kit_file = COMBINE_PSAR(Spectronaut, SN_license, FASTA, lib_output.collect(), EXT_PSAR, PROP_DIA)
 	
 	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
@@ -134,12 +146,12 @@ workflow {
                 .set { rawfile_batches_dia }
                 log.info "Processing raw files in batches of ${batchSize_dia}"
                 rawfile_batches_dia.subscribe { println "Processing a batch of $it for DIA search" }
-                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, kit_file.collect(), rawfile_batches_dia)
+                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file.collect(), rawfile_batches_dia, PROP_DIA)
 
         } else {
                 log.info "Processing raw files individually (batch size = 1)"
                 filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it for DIA search" }
-                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, kit_file.collect(), filtered_rawfiles)
+                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file.collect(), filtered_rawfiles, PROP_DIA)
         }
 	
 	
@@ -156,25 +168,25 @@ workflow {
 	
 	println "Number of raw files: $fileCount"
 
-	if (fileCount > 150 && params.REPORT) {
+	if (fileCount > 150 && REPORT) {
 		log.info "INFO: SNE files will be subjected to COMBINE SNE with Report schema input as there are more than ${fileCount} raw files"
-		COMBINE_SNE_REPORT(Spectronaut, SN_license, merged_input)
+		COMBINE_SNE_REPORT(Spectronaut, SN_license, FASTA, merged_input, PROP_DIA, REPORT)
 	} else if (fileCount > 150) {
 		log.info "INFO: SNE files will be subjected to COMBINE SNE as there are more than ${params.rawfile_count} raw files"
-		COMBINE_SNE(Spectronaut, SN_license, merged_input)
+		COMBINE_SNE(Spectronaut, SN_license, FASTA, merged_input, PROP_DIA)
 	
-        } else if (params.REPORT && params.COND_SETUP) {
+        } else if (REPORT && COND_SETUP) {
 		log.info "INFO: Executing merge SNEs with Condition and Report schema inputs"
-		MERGE_SNE_REPORT_COND(Spectronaut, SN_license, merged_input)
-	} else if (params.REPORT) {
+		MERGE_SNE_REPORT_COND(Spectronaut, SN_license, merged_input, PROP_DIA, REPORT, COND_SETUP)
+	} else if (REPORT) {
 		log.info "INFO: Executing merge SNEs with Report schema input"
-		MERGE_SNE_REPORT(Spectronaut, SN_license, merged_input)
-	} else if (params.COND_SETUP) {
+		MERGE_SNE_REPORT(Spectronaut, SN_license, merged_input, PROP_DIA, REPORT)
+	} else if (COND_SETUP) {
 		log.info "INFO: Executing merge SNEs with Conditions input"
-		MERGE_SNE_COND(Spectronaut, SN_license, merged_input)
+		MERGE_SNE_COND(Spectronaut, SN_license, merged_input, PROP_DIA, COND_SETUP)
 	} else {
 		log.info "INFO: Executing merge SNEs without any Conditions or Report schema inputs"
-		MERGE_SNE(Spectronaut, SN_license, merged_input)
+		MERGE_SNE(Spectronaut, SN_license, merged_input, PROP_DIA)
 	}
 }
 
