@@ -3,7 +3,9 @@
 sample_rfile = "${baseDir}/scripts/sampling_rawfiles.py"
 
 process SAMPLING_RAWFILES {
+
 	label 'random_sampling'
+	container = null  // always run Spectronaut outside container	
 	
 	module 'python3'
 	
