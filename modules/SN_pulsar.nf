@@ -8,14 +8,18 @@ if (!libs_dir.exists()) {
 
 process WORKFLOW_LIB {
 
-    label 'SN19_nf_lib'
+    label 'SN_nf_pulsar'
+    container = null  // always run Spectronaut outside container
 
     // module 'dotnet/6.0.16'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
+    val FASTA
     path rawfile               // Third input: One rawfile from the raw_d folder
+    val EXT_PSAR
+    val PROP_DIA
 
     output:
     path "${rawfile.getBaseName()}.psar", emit: psar_lib // Emit the .psar file created for each rawfile
@@ -39,24 +43,28 @@ process WORKFLOW_LIB {
         -o ${params.lib_output}\
         -a ${rawfile.getBaseName()}\
         -n ${rawfile.getBaseName()}\
-        -fasta ${params.FASTA}\
-        ${params.EXT_PSAR ?: ''}\
-        ${params.PROP_SEARCH ?: ''}\
-	${params.PROP_DIA ? "-rs ${params.PROP_DIA}" : ""}
+        -fasta ${FASTA}\
+	${EXT_PSAR ? " -sa ${EXT_PSAR}" : ""}\
+	${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
+	${PROP_DIA ? "-rs ${PROP_DIA}" : ""}
 	
     """
 }
 
 process WORKFLOW_LIB_BATCH {
 
-    label 'SN19_nf_lib'
+    label 'SN_nf_pulsar'
+    container = null  // always run Spectronaut outside container
 
     // module 'dotnet/6.0.16'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
+    val FASTA
     path rawfiles               // Third input: One rawfile from the raw_d folder
+    val EXT_PSAR
+    val PROP_DIA
 
     output:
     path "${task.index}.psar", emit: psar_lib // Emit the .psar file created for each rawfile
@@ -67,6 +75,7 @@ process WORKFLOW_LIB_BATCH {
     // Define output and error logs using task variables
     // error = "logs/${task.process}.${task.id}.err"
     // output = "logs/${task.process}.${task.id}.out"
+    // -n ${rawfiles.collect { it.getBaseName()}.join('_')}
 
     script:
     """
@@ -79,12 +88,13 @@ process WORKFLOW_LIB_BATCH {
         ${rawfiles.collect { "-r ${params.rawfile_dir}/${it}" }.join(' ')}\
         -o ${params.lib_output}\
         -a ${task.index}\
-        -n ${rawfiles.collect { it.getBaseName()}.join('_')}\
-        -fasta ${params.FASTA}\
-        ${params.EXT_PSAR ?: ''}\
-        ${params.PROP_SEARCH ?: ''}\
-        ${params.PROP_DIA ? "-rs ${params.PROP_DIA}" : ""}
+	-n ${task.index}\
+        -fasta ${FASTA}\
+	${EXT_PSAR ? " -sa ${EXT_PSAR}" : ""}\
+	${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
+        ${PROP_DIA ? "-rs ${PROP_DIA}" : ""}
 
         echo "Nextflow Task ID: ${task.index}"
     """
+
 }
