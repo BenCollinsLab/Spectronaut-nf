@@ -2,7 +2,7 @@
 A [nextflow](https://www.nextflow.io/) pipeline to carry [Spectronaut](https://biognosys.com/software/spectronaut/) DIA analysis with its parallel execution attribute. Here, individual LC-MS/MS derived proteomic rawfiles are queued for [Spectronaut](https://biognosys.com/software/spectronaut/) search separately with the help of [nextflow](https://www.nextflow.io/docs/latest/reference/config.html#executor) parallel execution attribute and the results are combined in the end to form a experiment wide output. This increases the [Spectronaut](https://biognosys.com/software/spectronaut/) DIA analysis search speed owing to the use of multiple High Performance Computing (HPC) nodes with the help of batch schedulers (ex: SLURM).
 
 ### Spectronaut-nf workflow
-![spectronaut_nextflow_workflow](https://github.com/user-attachments/assets/08a7660f-75d4-496b-b773-86cd12f84c87)
+![spectronaut_nextflow_workflow](https://github.com/user-attachments/assets/db924203-f191-4cc2-8677-7d72342c753c)
 
 ## Download Spectronaut-nf
 ```
@@ -20,7 +20,8 @@ executor = 'slurm'
 This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 ### DIA search inputs
-![250707_spectronaut-nf_nextflow config](https://github.com/user-attachments/assets/e051beab-b6c1-4dcd-a973-917aa7aab348)
+![spectronaut-nf_nextflow config](https://github.com/user-attachments/assets/eaf80480-e46d-41aa-ab2c-091eed20efe7)
+
 Define or modify all DIA search related inputs under `params`.
 * **Job name**
 * **Raw file directory/path:** Make sure that all the raw files are available in raw_d folder inside the Project directory
