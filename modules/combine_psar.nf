@@ -4,8 +4,6 @@ process COMBINE_PSAR{
 
     label 'SN_nf_combine_psar'
     container = null  // always run Spectronaut outside container
-    
-    // module 'dotnet/6.0.16'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -26,7 +24,7 @@ process COMBINE_PSAR{
 
 	dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
-	-sad ${params.psar_lib}\
+	-sad ${params.intermediate_psar}\
 	-k ${params.JOB_NAME}\
         -o ${params.lib_output}\
         -n ${params.JOB_NAME}\
