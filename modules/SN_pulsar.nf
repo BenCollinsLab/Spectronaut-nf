@@ -11,8 +11,6 @@ process WORKFLOW_LIB {
     label 'SN_nf_pulsar'
     container = null  // always run Spectronaut outside container
 
-    // module 'dotnet/6.0.16'
-
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
@@ -55,8 +53,6 @@ process WORKFLOW_LIB_BATCH {
 
     label 'SN_nf_pulsar'
     container = null  // always run Spectronaut outside container
-
-    // module 'dotnet/6.0.16'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
