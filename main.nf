@@ -1,5 +1,11 @@
 #!/usr/bin/env nextflow
 
+include { PULSAR_1_LIB } from './modules/SN_pulsarStages.nf'
+include { PULSAR_1_LIB_BATCH } from './modules/SN_pulsarStages.nf'
+include { GENERATE_QSP } from './modules/SN_pulsarStages.nf'
+include { PULSAR_3_LIB } from './modules/SN_pulsarStages.nf'
+include { PULSAR_3_LIB_BATCH } from './modules/SN_pulsarStages.nf'
+
 include { COMBINE_PSAR	} from './modules/combine_psar.nf'
 include { WORKFLOW_LIB	} from './modules/SN_pulsar.nf'
 include { WORKFLOW_LIB_BATCH } from './modules/SN_pulsar.nf'
@@ -8,10 +14,29 @@ include { WORKFLOW_DIA_BATCH } from './modules/SN_dia.nf'
 include { COMBINE_SNE_REPORT	} from './modules/combine_sne.nf'
 include { COMBINE_SNE	} from './modules/combine_sne.nf'
 include { MERGE_SNE	} from './modules/merge_sne.nf'
-include { MERGE_SNE_REPORT_COND } from './modules/merge_sne.nf'
-include { MERGE_SNE_REPORT } from './modules/merge_sne.nf'
-include { MERGE_SNE_COND } from './modules/merge_sne.nf'
 include { SAMPLING_RAWFILES  } from './modules/rawfile_sampling.nf'
+
+def snVersion = "dotnet ${params.spec_bin} --version"
+        .execute()
+        .text
+        .trim()
+        .find(/(\d+\.\d+)/) { full, v -> v }
+
+if( !snVersion ) {
+    error "Could not determine Spectronaut version from ${params.spec_bin}"
+}
+
+def v = snVersion.tokenize('.').collect { it as int }
+
+if( v[0] < 20 || (v[0] == 20 && v[1] < 4) ) {
+    error "Detected Spectronaut version: ${snVersion}. This pipeline requires:  Spectronaut >= 20.4. Detected binary: ${params.spec_bin}. Please upgrade Spectronaut before running this workflow."
+}
+
+//check if intermediates directory exists
+def intermediates = new File("${params.intermediates_output}")
+if (!intermediates.exists()) {
+        intermediates.mkdirs()
+        }
 
 //checking if output dir exists
 def out_dir = new File("${params.lib_output}")
@@ -100,24 +125,31 @@ workflow {
 		.buffer(size: batchSize, remainder: true) // Group into batches of user-defined size
 		.ifEmpty { error "No batches were produced. Check the rawfile count." }
 		.set { rawfile_batches }
-		log.info "Processing raw files in batches of ${params.batch_size}"
+		log.info "Processing raw files in batches of ${params.batch_size} for PulsarStep1"
 		rawfile_batches.subscribe { println "Processing batch: $it" }
-		lib_output = WORKFLOW_LIB_BATCH(Spectronaut, SN_license, FASTA, rawfile_batches, EXT_PSAR, PROP_DIA)
+		pulsarStep1_output = PULSAR_1_LIB_BATCH(Spectronaut, SN_license, FASTA, rawfile_batches, PROP_DIA ?: "", "pulsarStep1")
+		rawf_mapped_psar = pulsarStep1_output.map{ rawfile, psar -> psar }
 
 	} else {
 		rawfiles_for_lib
 		.map { [it] }  // Process one file at a time (wrap in list)
 		.set { rawfile_mapped }
-		log.info "Processing raw files individually (batch size = 1)"
+		log.info "Processing raw files individually (batch size = 1) for PulsarStep1"
 		rawfile_mapped.subscribe { println "Processing Mapped rawfile: $it" }
-		lib_output = WORKFLOW_LIB(Spectronaut, SN_license, FASTA, rawfile_mapped, EXT_PSAR, PROP_DIA)
+		pulsarStep1_output = PULSAR_1_LIB(Spectronaut, SN_license, FASTA, rawfile_mapped, PROP_DIA ?: "", "pulsarStep1")
+		rawf_mapped_psar = pulsarStep1_output.map{ rawfile, psar -> psar }
 	}
 
 	rawfile_dir = Channel.value(params.rawfile_dir)
 	sample_size = Channel.value(params.sample_size)
 	
-	// lib_output = WORKFLOW_LIB(Spectronaut, SN_license, rawfile_batches)
-	kit_file = COMBINE_PSAR(Spectronaut, SN_license, FASTA, lib_output.collect(), EXT_PSAR, PROP_DIA)
+	qsp_file = GENERATE_QSP(Spectronaut, SN_license, FASTA, rawf_mapped_psar.collect(), PROP_DIA ?: "", "pulsarStep2")
+	
+	pulsar3_input = pulsarStep1_output.combine(qsp_file).map { rawfile, psar, qsp -> tuple(rawfile, psar, qsp)}
+
+	pulsarStep3_output = PULSAR_3_LIB_BATCH(Spectronaut, SN_license, FASTA, PROP_DIA ?: "", "pulsarStep3", pulsar3_input)
+
+	kit_file = COMBINE_PSAR(Spectronaut, SN_license, FASTA, pulsarStep3_output.collect(), EXT_PSAR ?: "", PROP_DIA ?: "")
 	
 	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
@@ -146,12 +178,12 @@ workflow {
                 .set { rawfile_batches_dia }
                 log.info "Processing raw files in batches of ${batchSize_dia}"
                 rawfile_batches_dia.subscribe { println "Processing a batch of $it for DIA search" }
-                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file.collect(), rawfile_batches_dia, PROP_DIA)
+                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file.collect(), rawfile_batches_dia, EXT_PSAR ?: "", PROP_DIA ?: "")
 
         } else {
                 log.info "Processing raw files individually (batch size = 1)"
                 filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it for DIA search" }
-                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file.collect(), filtered_rawfiles, PROP_DIA)
+                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file.collect(), filtered_rawfiles, EXT_PSAR ?: "", PROP_DIA ?: "")
         }
 	
 	
@@ -175,18 +207,9 @@ workflow {
 		log.info "INFO: SNE files will be subjected to COMBINE SNE as there are more than ${params.rawfile_count} raw files"
 		COMBINE_SNE(Spectronaut, SN_license, FASTA, merged_input, PROP_DIA)
 	
-        } else if (REPORT && COND_SETUP) {
-		log.info "INFO: Executing merge SNEs with Condition and Report schema inputs"
-		MERGE_SNE_REPORT_COND(Spectronaut, SN_license, merged_input, PROP_DIA, REPORT, COND_SETUP)
-	} else if (REPORT) {
-		log.info "INFO: Executing merge SNEs with Report schema input"
-		MERGE_SNE_REPORT(Spectronaut, SN_license, merged_input, PROP_DIA, REPORT)
-	} else if (COND_SETUP) {
-		log.info "INFO: Executing merge SNEs with Conditions input"
-		MERGE_SNE_COND(Spectronaut, SN_license, merged_input, PROP_DIA, COND_SETUP)
-	} else {
-		log.info "INFO: Executing merge SNEs without any Conditions or Report schema inputs"
-		MERGE_SNE(Spectronaut, SN_license, merged_input, PROP_DIA)
+        } else {
+		log.info "INFO: Executing merge SNEs step"
+		MERGE_SNE(Spectronaut, SN_license, merged_input, PROP_DIA ?: "", REPORT ?: "", COND_SETUP ?: "")
 	}
 }
 
