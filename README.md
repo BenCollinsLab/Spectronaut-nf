@@ -37,12 +37,6 @@ Define or modify all DIA search related inputs under `params`.
 
 ## How to deploy the nextflow workflow directly to the HPC?
 ```
-nextflow -bg run main.nf -profile host -params-file params.yaml >> nextflow_cmd.log
-```
-```
 nextflow -bg run main.nf -c nextflow.config -with-timeline -with-trace >> nextflow_cmd.log
 ```
 If the nextflow pipeline crashes/brakes inbetween, you can resume the searches with the help of `-resume` command.
-
-## Cite Us
-xxxxxxxxxxxxxxxxxxxxxxxx
