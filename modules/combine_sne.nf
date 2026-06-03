@@ -4,7 +4,6 @@ process COMBINE_SNE {
 
         label 'SN_nf_combine_sne'
 	container = null  // always run Spectronaut outside container
-        // module 'dotnet/6.0.16'
 
         input:
         val SPEC_BIN               // First input: path to Spectronaut binary
@@ -32,7 +31,6 @@ process COMBINE_SNE_REPORT {
 
         label 'SN_nf_combine_sne'
 	container = null  // always run Spectronaut outside container
-        // module 'dotnet/6.0.16'
 
         input:
         val SPEC_BIN               // First input: path to Spectronaut binary
