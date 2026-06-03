@@ -11,14 +11,13 @@ process WORKFLOW_DIA {
 	label 'SN_nf_dia_search'
 	container = null  // always run Spectronaut outside container
 	
-	// module 'dotnet/6.0.16'
-	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
 	val LICENSE                // Second input: license key
 	val FASTA
 	path psar_lib
 	path rawfile               // Third input: One rawfile from the raw_d folder
+	val EXT_PSAR
 	val PROP_DIA
 	
 	output:
@@ -39,7 +38,7 @@ process WORKFLOW_DIA {
 	-a ${params.LIB_IN}\
 	-n ${rawfile.getBaseName()}\
 	-fasta ${FASTA}\
-	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
+	${EXT_PSAR ? "-sa ${EXT_PSAR}" : ""}\
 	${PROP_DIA ? "-s ${PROP_DIA}" : ""}
 	
 	"""
@@ -48,14 +47,15 @@ process WORKFLOW_DIA {
 process WORKFLOW_DIA_BATCH {
 	
 	label 'SN_nf_dia_search'
-	container = null  // always run Spectronaut outside container	
-	// module 'dotnet/6.0.16'
+	container = null  // always run Spectronaut outside container
+	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
 	val LICENSE                // Second input: license key
 	val FASTA
 	path psar_lib
 	path rawfiles              // Third input: One rawfile from the raw_d folder
+	val EXT_PSAR
 	val PROP_DIA
 
 	output:
@@ -80,7 +80,7 @@ process WORKFLOW_DIA_BATCH {
 	-a ${params.LIB_IN}\
 	-n ${task.index}\
 	-fasta ${FASTA}\
-	${params.EXT_PSAR ? "-sa ${params.EXT_PSAR}" : ""}\
+	${EXT_PSAR ? "-sa ${EXT_PSAR}" : ""}\
 	${PROP_DIA ? "-s ${PROP_DIA}" : ""}
 	
 	echo "Nextflow Task ID: ${task.index}"
