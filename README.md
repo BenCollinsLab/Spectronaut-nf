@@ -12,13 +12,6 @@ git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ## Spectronaut-nf input parameters
 Users can set most of the input parameters required to run the Spectronaut-nf pipeline in `params.yaml` file. This file can be edited using `vim` or `nano` editor in linux/HPC platform. In case of Windows systems, any text editor tools such as [Notepad++](https://notepad-plus-plus.org/) or [sublime](https://www.sublimetext.com/3) can be used.
 
-### Batch scheduler and its parameters 
-Set the batch scheduler used in your HPC platform inside `process`. 
-```
-executor = 'slurm'
-```
-This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
-
 ### DIA search inputs
 ![spectronaut-nf_nextflow config](https://github.com/user-attachments/assets/eaf80480-e46d-41aa-ab2c-091eed20efe7)
 
@@ -35,6 +28,13 @@ Define or modify all DIA search related inputs in `params.yaml`
 * **Set batch of raw files for each library generation process**
 
 * **Exclude raw file/s based on common name pattern for DIA search**
+
+### Batch scheduler and its parameters 
+Set the batch scheduler used in your HPC platform inside `process`. 
+```
+executor = 'slurm'
+```
+This will be followed by setting up process-specific partition requirements such as CPUs, RAM and Duration available in the respective HPC partition.
 
 ## How to deploy the nextflow workflow directly to the HPC?
 ```
