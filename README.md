@@ -34,6 +34,7 @@ Define or modify all DIA search related inputs in `params.yaml`:
 * **COND_SETUP** - TSV file specifying experimental condition/sample grouping metadata
 * **REPORT** - Spectronaut report template (.rs file) to customize output report columns and format
 * **PROP_DIA** - Optional custom Spectronaut search parameters file (.prop) for advanced search configuration
+* **max_files_for_ManageSNE** - Maximum number of SNE result files threshold for ManageSNE process execution. If total number of raw files exceeds this cutoff, the pipeline will execute CombineSNE process instead. Default: 150 (adjust based on available HPC/Cloud resources for large-scale SNE file merging)
 
 ### Process-specific Resource Allocation
 
