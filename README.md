@@ -38,31 +38,23 @@ Define or modify all DIA search related inputs in `params.yaml`:
 
 ### Process-specific Resource Allocation
 
-The pipeline consists of four main processes, each with configurable HPC resource requirements. Adjust the CPU, memory, and time limits based on your HPC cluster capabilities and data size.
+The pipeline consists of six main processes;
 
-#### Pulsar Library Generation (`SN_nf_pulsar_*`)
-- **SN_nf_pulsar_queue** - HPC queue name(s) for submitting Pulsar jobs
-- **SN_nf_pulsar_cpus** - Number of CPU cores per Pulsar job
-- **SN_nf_pulsar_memory** - RAM memory allocation per Pulsar job
-- **SN_nf_pulsar_time** - Maximum wall-clock time for Pulsar job execution
+1. Library generation - Pulsar Stage 1
+2. Generate QSP
+3. Library generation - Pulsar Stage 3
+4. Combine PSAR
+5. DIA search
+6. Combine/merge SNE
 
-#### PSAR Combination (`SN_nf_combine_psar_*`)
-- **SN_nf_combine_psar_queue** - HPC queue name(s) for combining multiple PSAR library files
-- **SN_nf_combine_psar_cpus** - Number of CPU cores per PSAR combination job
-- **SN_nf_combine_psar_memory** - RAM memory allocation per PSAR combination job
-- **SN_nf_combine_psar_time** - Maximum wall-clock time for PSAR combination job execution
+Each process is executed by different modules in Spectronaut-nf i.e., _SN_nf_pulsar_ (Process 1-3) , _SN_nf_combine_psar_ (Process 4), _SN_nf_dia_ (Process 5) and _SN_nf_combine_sne_ (Process 6), each with configurable HPC resource requirements. Adjust the CPU, memory, and time limits based on your HPC cluster capabilities and data size.
 
-#### DIA Search (`SN_nf_dia_search_*`)
-- **SN_nf_dia_search_queue** - HPC queue name(s) for DIA search jobs
-- **SN_nf_dia_search_cpus** - Number of CPU cores per DIA search job
-- **SN_nf_dia_search_memory** - RAM memory allocation per DIA search job
-- **SN_nf_dia_search_time** - Maximum wall-clock time for DIA search job execution
-
-#### SNE Combination/Merging (`SN_nf_combine_sne_*`)
-- **SN_nf_combine_sne_queue** - HPC queue name(s) for merging/combining SNE result files
-- **SN_nf_combine_sne_cpus** - Number of CPU cores per SNE combination job
-- **SN_nf_combine_sne_memory** - RAM memory allocation per SNE combination job
-- **SN_nf_combine_sne_time** - Maximum wall-clock time for SNE combination job execution
+| Parameter | Description |
+|-----------|-------------|
+| `*_queue` | HPC queue/partition used for each jobs. |
+| `*_cpus` | Number of CPU cores allocated per job. |
+| `*_memory` | Memory allocated per job. |
+| `*_time` | Maximum wall-clock time for job execution. |
 
 #### Parallel Execution Control
 - **executor_queueSize** - Maximum number of search jobs to execute in parallel on the HPC queue
