@@ -200,15 +200,15 @@ workflow {
 	
 	println "Number of raw files: $fileCount"
 
-	if (fileCount > 150 && REPORT) {
-		log.info "INFO: SNE files will be subjected to COMBINE SNE with Report schema input as there are more than ${fileCount} raw files"
+	if (fileCount > params.max_files_for_ManageSNE && REPORT) {
+		log.info "INFO: SNE files will be subjected to CombineSNE with Report schema input as there are more than ${params.max_files_for_ManageSNE} raw files"
 		COMBINE_SNE_REPORT(Spectronaut, SN_license, FASTA, merged_input, PROP_DIA, REPORT)
-	} else if (fileCount > 150) {
-		log.info "INFO: SNE files will be subjected to COMBINE SNE as there are more than ${params.rawfile_count} raw files"
+	} else if (fileCount > params.max_files_for_ManageSNE) {
+		log.info "INFO: SNE files will be subjected to CombineSNE as there are more than ${params.max_files_for_ManageSNE} raw files"
 		COMBINE_SNE(Spectronaut, SN_license, FASTA, merged_input, PROP_DIA)
 	
         } else {
-		log.info "INFO: Executing merge SNEs step"
+		log.info "INFO: Executing ManageSNE to merge all SNEs to a single SNE file"
 		MERGE_SNE(Spectronaut, SN_license, merged_input, PROP_DIA ?: "", REPORT ?: "", COND_SETUP ?: "")
 	}
 }
