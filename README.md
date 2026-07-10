@@ -73,7 +73,14 @@ nextflow -bg run /path/to/main.nf -params-file /path/to/params.yaml >> nextflow_
 If the nextflow pipeline crashes/breaks in between, you can resume the searches with the help of `-resume` command.
 
 ## Output
-xxxxxxxxx
+| Output Folder | Description |
+|---------------|-------------|
+| intermediates | Task specific outputs from Library generation stages (Pulsar Stage 1, Generate QSP and Pulsar Stage 3) are saved here. |
+| out_lib | |
+| out_dia | |
+| logs | |
+| work | |
+| tmp | |
 
 ## Future direction
 Implementation of process-specific dynamic resource request/allocation by Nextflow based on the batch size and also based on the size of individual raw files. This will improve efficiency by requesting the appropriate CPUs and memory needed for a single or batch of raw files. Finally, by leveraging Nextflow, the workflow can be extended to operate seamlessly across 19 different execution platforms, offering broad adaptability to diverse computing environments with minor adjustments to the workflow.
