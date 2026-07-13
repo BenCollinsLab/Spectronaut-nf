@@ -75,12 +75,12 @@ If the nextflow pipeline crashes/breaks in between, you can resume the searches 
 ## Output
 | Output Folder | Description |
 |---------------|-------------|
-| intermediates | Task-specific outputs from Library generation stages (Pulsar Stage 1, Generate QSP and Pulsar Stage 3) are saved here. |
-| out_lib | Final output of library generation, i.e., experiment-wide library (.psar and .kit) by combining all task-specific .psar files. |
-| out_dia | |
-| logs | |
-| work | |
-| tmp | |
+| `intermediates` | Task-specific outputs generated during the library creation stages (Pulsar Stage 1, Generate QSP, and Pulsar Stage 3). |
+| `out_lib` | Final library generation outputs, including the experiment-wide spectral library files (`.psar` and `.kit`) obtained by combining all task-specific `.psar` files. |
+| `out_dia` | Outputs from all DIA search tasks, including the final experiment-wide DIA search results. Users can use the final Spectronaut reports or SNE file for further downstream analysis. |
+| `logs` | Nextflow execution reports, timelines, traces, and other log files generated during the pipeline run. |
+| `work` | Nextflow working directory containing task-specific execution folders identified by unique hash keys. |
+| `tmp` | Temporary files and intermediate data generated during pipeline execution. These files can be safely removed after successful completion of the pipeline. |
 
 ## Future direction
 Implementation of process-specific dynamic resource request/allocation by Nextflow based on the batch size and also based on the size of individual raw files. This will improve efficiency by requesting the appropriate CPUs and memory needed for a single or batch of raw files. Finally, by leveraging Nextflow, the workflow can be extended to operate seamlessly across 19 different execution platforms, offering broad adaptability to diverse computing environments with minor adjustments to the workflow.
