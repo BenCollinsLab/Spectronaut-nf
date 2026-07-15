@@ -19,6 +19,19 @@ Users can set most of the input parameters required to run the Spectronaut-nf pi
 ### DIA search inputs
 ![spectronaut-nf_nextflow config](https://github.com/user-attachments/assets/eaf80480-e46d-41aa-ab2c-091eed20efe7)
 
+### Process-specific Resource Allocation
+
+The pipeline consists of six main processes;
+
+1. Library generation - Pulsar Stage 1
+2. Generate QSP
+3. Library generation - Pulsar Stage 3
+4. Combine PSAR
+5. DIA search
+6. Combine/merge SNE
+
+Each process is executed by different modules in Spectronaut-nf i.e., _SN_nf_pulsar_ (Process 1-3) , _SN_nf_combine_psar_ (Process 4), _SN_nf_dia_ (Process 5) and _SN_nf_combine_sne_ (Process 6), each with configurable HPC resource requirements. Adjust the CPU, memory, and time limits based on your HPC cluster capabilities and data size.
+
 #### Required Parameters
 
 Define or modify all DIA search-related inputs in `params.yaml`:
@@ -40,19 +53,6 @@ Define or modify all DIA search-related inputs in `params.yaml`:
 * **PROP_DIA** - Optional custom Spectronaut search parameters file (.prop) for advanced search configuration
 * **max_files_for_ManageSNE** - Maximum number of SNE result files threshold for manage SNE process execution. If the total number of raw files exceeds this cutoff, the pipeline will execute combineSNE process instead. Default: 150 (adjust based on available HPC/Cloud resources for large-scale SNE file merging)
 
-### Process-specific Resource Allocation
-
-The pipeline consists of six main processes;
-
-1. Library generation - Pulsar Stage 1
-2. Generate QSP
-3. Library generation - Pulsar Stage 3
-4. Combine PSAR
-5. DIA search
-6. Combine/merge SNE
-
-Each process is executed by different modules in Spectronaut-nf i.e., _SN_nf_pulsar_ (Process 1-3) , _SN_nf_combine_psar_ (Process 4), _SN_nf_dia_ (Process 5) and _SN_nf_combine_sne_ (Process 6), each with configurable HPC resource requirements. Adjust the CPU, memory, and time limits based on your HPC cluster capabilities and data size.
-
 ### Batch scheduler and its parameters 
 Set the batch scheduler used in your HPC platform inside `process`. 
 ```
@@ -70,7 +70,7 @@ This will be followed by setting up process-specific partition requirements such
 #### Parallel Execution Control
 - **executor_queueSize** - Maximum number of search tasks to execute in parallel on the HPC queue
 
-## How to deploy the nextflow workflow directly to the HPC?
+## Execution of Spectronaut-nf in HPC
 ```
 nextflow -bg run /path/to/main.nf -params-file /path/to/params.yaml >> nextflow_cmd.log
 ```
