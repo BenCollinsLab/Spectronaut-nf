@@ -11,7 +11,7 @@ git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ## Prerequisite
 1. dotnet (https://aka.ms/dotnet/download) - Version: 8.0.18
 2. nextflow (nextflow/25.10.3)
-3. slurm
+3. slurm (v25.05.2)
 
 ## Spectronaut-nf input parameters
 Users can set most of the input parameters required to run the Spectronaut-nf pipeline in `params.yaml` file. This file can be edited using `vim` or `nano` editor in linux/HPC platform. In case of[...]
