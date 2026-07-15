@@ -9,7 +9,7 @@ A [nextflow](https://www.nextflow.io/) pipeline to carry [Spectronaut](https://b
 git clone https://github.com/BenCollinsLab/Spectronaut-nf
 ```
 ## Prerequisite
-1. dotnet (https://aka.ms/dotnet/download) - Version: 8.0.18
+1. dotnet (v8.0.18) - https://aka.ms/dotnet/download
 2. nextflow (nextflow/25.10.3)
 3. slurm (v25.05.2)
 
