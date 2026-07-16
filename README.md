@@ -162,8 +162,5 @@ results/
 └── work/
 ```
 
-## License
-GLP-3.0
-
 ## Citation
 xxxxxxxxxxxxx
