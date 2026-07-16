@@ -29,9 +29,54 @@ git clone https://github.com/BenCollinsLab/Spectronaut-nf
 cd Spectronaut-nf
 ```
 ## Prerequisite
-1. dotnet (v8.0.18) - https://aka.ms/dotnet/download
-2. nextflow (nextflow/25.10.3)
-3. slurm (v25.05.2)
+The following software packages must be installed and accessible in your environment before running `Spectronaut-nf`.
+
+| Software | Minimum Version | Purpose |
+|-----------|----------------|----------|
+| [.NET](https://aka.ms/dotnet/download) | 8.0.18 | Required to execute the Spectronaut command-line application (`SpectronautCMD.dll`). |
+| [Nextflow](https://www.nextflow.io/) | 25.10.3 | Workflow manager used to orchestrate and execute the pipeline processes. |
+| [SLURM](https://slurm.schedmd.com/) | 24.04.3 | Optional but recommended HPC workload manager used to distribute and execute jobs in parallel across compute nodes. |
+
+### Verify Installation
+
+```bash
+$ dotnet --info
+
+Host:
+  Version:      8.0.18
+  Architecture: x64
+  Commit:       ef853a7105
+  RID:          rocky.8-x64
+.
+.
+.
+```
+
+```
+$ nextflow info
+  Version: 25.10.3 build 10983
+  Created: 22-01-2026 15:34 UTC (15:34 BST)
+  System: Linux 4.18.0-553.64.1.el8_10.x86_64
+  Runtime: Groovy 4.0.28 on Java HotSpot(TM) 64-Bit Server VM 22.0.2+9-70
+  Encoding: UTF-8 (UTF-8)
+```
+
+```
+$ sinfo --version
+slurm 25.05.2
+```
+
+> **Note:** `Spectronaut-nf` has been developed and tested using the software versions listed above. Earlier or later versions may work but have not been extensively validated.
+
+> **Cluster Environment:** On most HPC systems, these dependencies can be loaded through environment modules, for example:
+>
+> ```bash
+> module load dotnet/8.0.18
+> module load nextflow/25.10.3
+> module load slurm/25.05.2
+> ```
+>
+> Please consult your local HPC administrator if different module names or versions are used on your system.
 
 ## Spectronaut-nf input variables
 Users can set most of the input parameters required to run the Spectronaut-nf pipeline in `params.yaml` file. This file can be edited using `vim` or `nano` editor in linux/HPC platform.
