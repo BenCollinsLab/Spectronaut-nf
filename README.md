@@ -55,13 +55,13 @@ Define or modify all DIA search-related inputs in `params.yaml`:
 #### Optional Parameters
 | Parameter | Description |
 |--------------|---------------------------------------------------------------------------------------------------------|
-| **sample_size** | Number of raw files to randomly sample for library generation (if not specified, all files are used) |
-| **batch_size** | Number of raw files to group together for each library generation process (i.e., task). Default: 1 (individual files processed separately via Pulsar) |
-| **excludePattern** | Exclude raw files by name pattern (e.g., "pooled" will skip files containing "pooled") |
-| **COND_SETUP** | TSV file specifying experimental condition/sample grouping metadata |
-| **REPORT** | Spectronaut report template (.rs file) to customize output report columns and format |
-| **PROP_DIA** | Optional custom Spectronaut search parameters file (.prop) for advanced search configuration |
-| **max_files_for_ManageSNE** | Maximum number of SNE result files threshold for manage SNE process execution. If the total number of raw files exceeds this cutoff, the pipeline will execute combineSNE process instead. Default: 150 (adjust based on available HPC/Cloud resources for large-scale SNE file merging) |
+| `sample_size` | Number of raw files to randomly sample for library generation (if not specified, all files are used) |
+| `batch_size` | Number of raw files to group together for each library generation process (i.e., task). Default: 1 (individual files processed separately via Pulsar) |
+| `excludePattern` | Exclude raw files by name pattern (e.g., "pooled" will skip files containing "pooled") |
+| `COND_SETUP` | TSV file specifying experimental condition/sample grouping metadata |
+| `REPORT` | Spectronaut report template (.rs file) to customize output report columns and format |
+| `PROP_DIA` | Optional custom Spectronaut search parameters file (.prop) for advanced search configuration |
+| `max_files_for_ManageSNE` | Maximum number of SNE result files threshold for manage SNE process execution. If the total number of raw files exceeds this cutoff, the pipeline will execute combineSNE process instead. Default: 150 (adjust based on available HPC/Cloud resources for large-scale SNE file merging) |
 
 ### HPC Configuration
 Set the batch scheduler used in your HPC platform inside `process`. 
@@ -118,7 +118,7 @@ results/
 ```
 
 ## License
-
+GLP-3.0
 
 ## Citation
 xxxxxxxxxxxxx
