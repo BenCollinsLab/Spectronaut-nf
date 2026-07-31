@@ -163,4 +163,4 @@ results/
 ```
 
 ## Citation
-xxxxxxxxxxxxx
+Spectronaut-nf: A Nextflow Pipeline for Parallel Processing of DIA Data with Spectronaut [bioRxiv, 2026](https://www.biorxiv.org/content/10.64898/2026.07.29.741433v1)
