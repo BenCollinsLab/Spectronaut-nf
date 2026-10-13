@@ -16,6 +16,9 @@ REPORT: "Precursor_fragment_info.rs"
 # PROP_DIA: "Kuiper_PTM_Probing_Search.prop"
 EXT_PSAR: "251020_THP1_DMSO_Search_SN20.2.psar"
 
+### Define the executor used in your HPC ###
+executor: 'slurm'
+
 ### Number of Parallel Searches ###
 executor_queueSize: 4
 
