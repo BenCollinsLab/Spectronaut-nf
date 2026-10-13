@@ -1,0 +1,43 @@
+name: Spectronaut-nf CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Nextflow pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Nextflow
+        run: |
+          curl -fsSL https://get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/nextflow
+        env:
+          NXF_VER: '25.10.3'
+
+      - name: Check Nextflow version
+        run: nextflow -version
+
+      - name: Lint Nextflow scripts and configuration
+        run: nextflow lint .
+
+      - name: Validate Nextflow configuration
+        run: nextflow config .
