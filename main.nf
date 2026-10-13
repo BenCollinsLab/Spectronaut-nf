@@ -151,7 +151,7 @@ workflow {
 		// Load .d and other rawfiles from the directory
 		rawfiles_for_lib = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 					.ifEmpty { error "No Bruker/raw/wiff/mzML files found in ${params.rawfile_dir}" }
-					.map { it.toString() }
+					.map { it.toAbsolutePath().toString() }
 	
 		rawfiles_for_lib.count().subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
 	}
@@ -178,7 +178,6 @@ workflow {
 
 	} else {
 		rawfiles_for_lib
-		.map { [it] }  // Process one file at a time (wrap in list)
 		.set { rawfile_mapped }
 		log.info "Processing raw files individually (batch size = 1) for PulsarStep1"
 		rawfile_mapped.subscribe { println "Processing Mapped rawfile: $it" }

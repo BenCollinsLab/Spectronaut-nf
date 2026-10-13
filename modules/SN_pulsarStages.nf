@@ -19,7 +19,7 @@ process PULSAR_1_LIB {
     val pulsarStep
 	
     output:
-    tuple path(rawfile), path("${rawfile.getBaseName()}.psar"), emit: psar_with_raw
+    tuple val(rawfile), path("${rawfile.getBaseName()}.psar"), emit: psar_with_raw
 
     // path "${rawfile.getBaseName()}.psar", emit: intermediate_psar // Emit the .psar file created for each rawfile
 
@@ -38,7 +38,7 @@ process PULSAR_1_LIB {
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
-       	-r "${params.rawfile_dir}/${rawfile}"\
+       	-r ${rawfile}\
         -o ${params.intermediates_output}\
         -a ${rawfile.getBaseName()}\
         -n ${rawfile.getBaseName()}\
