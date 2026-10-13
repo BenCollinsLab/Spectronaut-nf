@@ -33,7 +33,7 @@ process WORKFLOW_LIB {
     """
         echo "Processing rawfile: ${rawfile}"
 	
-	dotnet ${SPEC_BIN} -activate ${LICENSE}
+	dotnet ${SPEC_BIN} activate ${LICENSE}
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
@@ -77,7 +77,7 @@ process WORKFLOW_LIB_BATCH {
     """
         echo "Processing rawfile: ${rawfiles}"
 	
-	dotnet ${SPEC_BIN} -activate ${LICENSE}	
+	dotnet ${SPEC_BIN} activate ${LICENSE}	
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\

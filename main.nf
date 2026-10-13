@@ -16,34 +16,39 @@ include { COMBINE_SNE	} from './modules/combine_sne.nf'
 include { MERGE_SNE	} from './modules/merge_sne.nf'
 include { SAMPLING_RAWFILES  } from './modules/rawfile_sampling.nf'
 
-if (workflow.profile.contains('container') && !params.image_path) {
-    exit 1, "ERROR: '-profile container' requires 'sif_path' to be set in params.yaml"
-}
-if (!workflow.profile.contains('container') && !params.image_path) {
-    exit 1, "ERROR: running without '-profile container' requires 'spec_bin' to be set in params.yaml"
+// ============================================================
+// Spectronaut execution mode
+// ============================================================
+
+def usingContainer = workflow.profile.contains('container')
+
+if (usingContainer && !params.image_path) {
+    exit 1, "ERROR: '-profile container' requires 'image_path' to be set."
 }
 
-def versionCmd
-if (workflow.profile.contains('container')) {
-    // def containerSpecBin = params.container_spec_bin ?: '/opt/spectronaut/binaries/Spectronaut/bin/SpectronautCMD.dll'
-    versionCmd = "apptainer exec ${params.image_path} spectronaut --version"
+if (!usingContainer && !params.spec_bin) {
+    exit 1, "ERROR: running without '-profile container' requires 'spec_bin' to be set."
+}
+
+
+// ============================================================
+// Spectronaut executable
+// ============================================================
+
+def spec_bin
+
+if (usingContainer) {
+
+    // This path exists INSIDE the SIF
+    spec_bin = params.spec_bin ?: '/usr/lib/spectronaut/SpectronautCMD.dll'
+
 } else {
-    versionCmd = "dotnet ${params.spec_bin} --version"
+
+    // This path exists on the HOST
+    spec_bin = resolveFilePath(params.spec_bin)
 }
 
-println "{$versionCmd}"
-
-def snVersion = versionCmd.execute().text.trim().find(/(\d+\.\d+)/) { full, v -> v }
-if( !snVersion ) {
-    error "Could not determine Spectronaut version using: ${versionCmd}"
-}
-
-println "{$snVersion}"
-
-def v = snVersion.tokenize('.').collect { it as int }
-if( v[0] < 20 || (v[0] == 20 && v[1] < 4) ) {
-    error "Detected Spectronaut version: ${snVersion}. This pipeline requires Spectronaut >= 20.4."
-}
+println "Spectronaut executable: ${spec_bin}"
 
 //check if intermediates directory exists
 def intermediates = new File("${params.intermediates_output}")
@@ -71,8 +76,35 @@ def resolveFilePath(val) {
 }
 
 // Required
-def spec_bin = resolveFilePath(params.spec_bin)
-def license = resolveFilePath(params.license)
+def license = params.license?.toString()?.trim()
+
+if (!license) {
+    error "License must be provided in params.yaml"
+}
+
+// If the supplied value points to an existing file, read the first line
+if (new File(license).exists()) {
+
+    def licenseFile = new File(license)
+
+    if (!licenseFile.isFile()) {
+        error "License path exists but is not a file: ${license}"
+    }
+
+    license = licenseFile.readLines()[0]?.trim()
+
+    if (!license) {
+        error "License file is empty: ${licenseFile}"
+    }
+
+    println "License loaded from file: ${licenseFile}"
+
+} else {
+
+    // Otherwise treat the supplied value as the license key itself
+    println "License provided directly as a value"
+}
+
 def FASTA   = resolveFilePath(params.FASTA)
 
 // Optional (normalize only if user defined something other than null)
@@ -157,8 +189,14 @@ workflow {
 	sample_size = Channel.value(params.sample_size)
 	
 	qsp_file = GENERATE_QSP(Spectronaut, SN_license, FASTA, rawf_mapped_psar.collect(), PROP_DIA ?: "", "pulsarStep2")
-	
-	pulsar3_input = pulsarStep1_output.combine(qsp_file).map { rawfile, psar, qsp -> tuple(rawfile, psar, qsp)}
+
+	qsp_file.view { "QSP OUTPUT: $it" }
+
+	pulsar3_input = pulsarStep1_output.combine(qsp_file).map { item -> tuple(item[0], item[1], item[2])}
+
+	pulsar3_input.view { "PULSAR STEP3 INPUT: $it" }
+
+	println "FASTA: ${FASTA}"
 
 	pulsarStep3_output = PULSAR_3_LIB_BATCH(Spectronaut, SN_license, FASTA, PROP_DIA ?: "", "pulsarStep3", pulsar3_input)
 

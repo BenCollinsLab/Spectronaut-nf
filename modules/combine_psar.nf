@@ -7,7 +7,7 @@ process COMBINE_PSAR{
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
-    val FASTA
+    path FASTA
     path lib_output            //
     val EXT_PSAR
     val PROP_DIA
@@ -19,7 +19,7 @@ process COMBINE_PSAR{
 
     script:
     """
-	dotnet ${SPEC_BIN} -activate ${LICENSE}
+	dotnet ${SPEC_BIN} activate ${LICENSE}
 
 	dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\

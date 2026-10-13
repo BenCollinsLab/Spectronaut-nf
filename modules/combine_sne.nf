@@ -18,7 +18,7 @@ process COMBINE_SNE {
         """
 	cp -rf ${params.dia_output}/*/*.sne ${params.dia_output}
 
-        dotnet ${SPEC_BIN} -activate ${LICENSE}
+        dotnet ${SPEC_BIN} activate ${LICENSE}
 
         dotnet ${SPEC_BIN} combine -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB_NAME} -fasta ${FASTA}\
 	 ${PROP_DIA ? "-s ${PROP_DIA}" : ""}
@@ -45,7 +45,7 @@ process COMBINE_SNE_REPORT {
         """
 	cp -rf ${params.dia_output}/*/*.sne ${params.dia_output}
 	
-        dotnet ${SPEC_BIN} -activate ${LICENSE}
+        dotnet ${SPEC_BIN} activate ${LICENSE}
 
         dotnet ${SPEC_BIN} combine -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB_NAME} -fasta ${FASTA}\
 	 ${PROP_DIA ? "-s ${PROP_DIA}" : ""} -rs ${REPORT}

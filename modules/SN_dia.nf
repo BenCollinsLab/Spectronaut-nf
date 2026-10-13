@@ -30,7 +30,7 @@ process WORKFLOW_DIA {
 	"""
 	bash ${baseDir}/scripts/random_sleep.sh
 	
-	dotnet ${SPEC_BIN} -activate ${LICENSE}	
+	dotnet ${SPEC_BIN} activate ${LICENSE}	
 
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir} -r ${params.rawfile_dir}/${rawfile}\
 	-o ${params.dia_output}\
@@ -70,7 +70,7 @@ process WORKFLOW_DIA_BATCH {
 	
 	bash ${baseDir}/scripts/random_sleep.sh
 	
-	dotnet ${SPEC_BIN} -activate ${LICENSE}
+	dotnet ${SPEC_BIN} activate ${LICENSE}
 	
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir}\
 	${rawfiles.collect { "-r ${params.rawfile_dir}/${it}" }.join(' ')}\

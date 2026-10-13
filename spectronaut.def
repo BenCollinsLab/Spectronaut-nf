@@ -1,0 +1,40 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%files
+    Spectronaut_21.0.260703.94842.deb /opt/Spectronaut_21.0.0.deb
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y wget ca-certificates libgomp1
+
+    # Add Microsoft repo for dotnet8 (skip this block if not needed)
+    wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
+    dpkg -i /tmp/packages-microsoft-prod.deb
+    rm /tmp/packages-microsoft-prod.deb
+    apt-get update
+    apt-get install -y dotnet-sdk-8.0
+
+    # Install Spectronaut
+    apt-get install -y /opt/Spectronaut_21.0.0.deb
+    rm /opt/Spectronaut_21.0.0.deb
+
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+%runscript
+    exec spectronaut "$@"
+
+%labels
+    Author Collins_Lab
+    Version 21.0.0
+
+%help
+    Apptainer container for Spectronaut 21.0.0
+    Usage: apptainer run spectronaut21.sif
