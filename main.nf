@@ -106,7 +106,7 @@ if (new File(license).exists()) {
 }
 
 def FASTA   = resolveFilePath(params.FASTA)
-RANDOM_SLEEP = Channel.fromPath("${baseDir}/scripts/random_sleep.sh", checkIfExists: true)
+RANDOM_SLEEP = Channel.value(file("${baseDir}/scripts/random_sleep.sh"))
 
 // Optional (normalize only if user defined something other than null)
 def EXT_PSAR    = (params.EXT_PSAR && !params.EXT_PSAR.contains("null")) ? resolveFilePath(params.EXT_PSAR) : ""
@@ -204,6 +204,8 @@ workflow {
 	kit_file = COMBINE_PSAR(Spectronaut, SN_license, FASTA, pulsarStep3_output.collect(), EXT_PSAR ?: "", PROP_DIA ?: "")
 
 	kit_file.view { "KIT OUTPUT: $it" }
+
+	kit_file_value = kit_file.first()
 	
 	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}
@@ -234,12 +236,12 @@ workflow {
                 
 		log.info "Processing raw files in batches of ${batchSize_dia}"
                 
-                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file.collect(), rawfile_batches_dia, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
+                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file_value, rawfile_batches_dia, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
 
         } else {
                 log.info "Processing raw files individually (batch size = 1)"
                 filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it for DIA search" }
-                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file.collect(), filtered_rawfiles, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
+                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file_value, filtered_rawfiles, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
         }
 	
 	
