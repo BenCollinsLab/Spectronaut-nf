@@ -106,6 +106,7 @@ if (new File(license).exists()) {
 }
 
 def FASTA   = resolveFilePath(params.FASTA)
+RANDOM_SLEEP = Channel.fromPath("${baseDir}/scripts/random_sleep.sh", checkIfExists: true)
 
 // Optional (normalize only if user defined something other than null)
 def EXT_PSAR    = (params.EXT_PSAR && !params.EXT_PSAR.contains("null")) ? resolveFilePath(params.EXT_PSAR) : ""
@@ -201,9 +202,11 @@ workflow {
 	pulsarStep3_output = PULSAR_3_LIB_BATCH(Spectronaut, SN_license, FASTA, PROP_DIA ?: "", "pulsarStep3", pulsar3_input)
 
 	kit_file = COMBINE_PSAR(Spectronaut, SN_license, FASTA, pulsarStep3_output.collect(), EXT_PSAR ?: "", PROP_DIA ?: "")
+
+	kit_file.view { "KIT OUTPUT: $it" }
 	
 	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
-		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}.map { it.toString() }
+		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}
 	rawfiles_for_dia.set { rawfiles_for_dia_mapped }
 	
 	// Check if excludePattern is defined and filter rawfiles accordingly
@@ -223,18 +226,20 @@ workflow {
 	
 	if (batchSize > 1) {
 		batchSize_dia = batchSize * 2
-                filtered_rawfiles
-                .buffer(size: batchSize_dia, remainder: true) // Group into batches of user-defined size
-                .ifEmpty { error "No batches were produced. Check the rawfile count." }
-                .set { rawfile_batches_dia }
-                log.info "Processing raw files in batches of ${batchSize_dia}"
-                rawfile_batches_dia.subscribe { println "Processing a batch of $it for DIA search" }
-                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file.collect(), rawfile_batches_dia, EXT_PSAR ?: "", PROP_DIA ?: "")
+		rawfile_batches_dia = rawfiles_for_dia
+			.filter { rawfile -> !params.excludePattern || !rawfile.toString().contains(params.excludePattern) }
+			.buffer(size: batchSize_dia, remainder: true)
+
+		rawfile_batches_dia.view { batch -> "DIA BATCH (${batch.size()} files): ${batch}"}
+                
+		log.info "Processing raw files in batches of ${batchSize_dia}"
+                
+                dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file.collect(), rawfile_batches_dia, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
 
         } else {
                 log.info "Processing raw files individually (batch size = 1)"
                 filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it for DIA search" }
-                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file.collect(), filtered_rawfiles, EXT_PSAR ?: "", PROP_DIA ?: "")
+                dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file.collect(), filtered_rawfiles, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
         }
 	
 	

@@ -18,7 +18,8 @@ process WORKFLOW_DIA {
 	path rawfile               // Third input: One rawfile from the raw_d folder
 	val EXT_PSAR
 	val PROP_DIA
-	
+	path random_sleep
+
 	output:
 	path "${params.JOB_NAME}.kit", emit: kit_file    // Output directory for each rawfile
 	
@@ -28,7 +29,7 @@ process WORKFLOW_DIA {
 
     	script:
 	"""
-	bash ${baseDir}/scripts/random_sleep.sh
+	bash "${random_sleep}"
 	
 	dotnet ${SPEC_BIN} activate ${LICENSE}	
 
@@ -55,6 +56,7 @@ process WORKFLOW_DIA_BATCH {
 	path rawfiles              // Third input: One rawfile from the raw_d folder
 	val EXT_PSAR
 	val PROP_DIA
+	path random_sleep
 
 	output:
 	path "${params.JOB_NAME}.kit", emit: kit_file
@@ -68,7 +70,7 @@ process WORKFLOW_DIA_BATCH {
 	"""
 	echo "Processing rawfiles: ${rawfiles}"
 	
-	bash ${baseDir}/scripts/random_sleep.sh
+	bash "${random_sleep}"
 	
 	dotnet ${SPEC_BIN} activate ${LICENSE}
 	
