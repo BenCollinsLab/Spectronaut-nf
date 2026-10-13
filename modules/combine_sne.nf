@@ -3,8 +3,7 @@
 process COMBINE_SNE {
 
         label 'SN_nf_combine_sne'
-	container = null  // always run Spectronaut outside container
-
+	
         input:
         val SPEC_BIN               // First input: path to Spectronaut binary
         val LICENSE                // Second input: license key
@@ -30,8 +29,7 @@ process COMBINE_SNE {
 process COMBINE_SNE_REPORT {
 
         label 'SN_nf_combine_sne'
-	container = null  // always run Spectronaut outside container
-
+	
         input:
         val SPEC_BIN               // First input: path to Spectronaut binary
         val LICENSE                // Second input: license key
@@ -53,5 +51,4 @@ process COMBINE_SNE_REPORT {
 	 ${PROP_DIA ? "-s ${PROP_DIA}" : ""} -rs ${REPORT}
 
         """
-
 }

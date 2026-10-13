@@ -9,7 +9,6 @@ if (!dia_dir.exists()) {
 process WORKFLOW_DIA {
 	
 	label 'SN_nf_dia_search'
-	container = null  // always run Spectronaut outside container
 	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
@@ -47,7 +46,6 @@ process WORKFLOW_DIA {
 process WORKFLOW_DIA_BATCH {
 	
 	label 'SN_nf_dia_search'
-	container = null  // always run Spectronaut outside container
 	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary

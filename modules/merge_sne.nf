@@ -3,7 +3,7 @@
 process MERGE_SNE {
 	
 	label 'SN_nf_combine_sne'
-	container = null
+	
 	//errorStrategy 'retry'
 	
 	input:

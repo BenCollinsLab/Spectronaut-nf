@@ -3,7 +3,6 @@
 process COMBINE_PSAR{
 
     label 'SN_nf_combine_psar'
-    container = null  // always run Spectronaut outside container
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary

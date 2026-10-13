@@ -16,20 +16,33 @@ include { COMBINE_SNE	} from './modules/combine_sne.nf'
 include { MERGE_SNE	} from './modules/merge_sne.nf'
 include { SAMPLING_RAWFILES  } from './modules/rawfile_sampling.nf'
 
-def snVersion = "dotnet ${params.spec_bin} --version"
-        .execute()
-        .text
-        .trim()
-        .find(/(\d+\.\d+)/) { full, v -> v }
-
-if( !snVersion ) {
-    error "Could not determine Spectronaut version from ${params.spec_bin}"
+if (workflow.profile.contains('container') && !params.image_path) {
+    exit 1, "ERROR: '-profile container' requires 'sif_path' to be set in params.yaml"
+}
+if (!workflow.profile.contains('container') && !params.image_path) {
+    exit 1, "ERROR: running without '-profile container' requires 'spec_bin' to be set in params.yaml"
 }
 
-def v = snVersion.tokenize('.').collect { it as int }
+def versionCmd
+if (workflow.profile.contains('container')) {
+    // def containerSpecBin = params.container_spec_bin ?: '/opt/spectronaut/binaries/Spectronaut/bin/SpectronautCMD.dll'
+    versionCmd = "apptainer exec ${params.image_path} spectronaut --version"
+} else {
+    versionCmd = "dotnet ${params.spec_bin} --version"
+}
 
+println "{$versionCmd}"
+
+def snVersion = versionCmd.execute().text.trim().find(/(\d+\.\d+)/) { full, v -> v }
+if( !snVersion ) {
+    error "Could not determine Spectronaut version using: ${versionCmd}"
+}
+
+println "{$snVersion}"
+
+def v = snVersion.tokenize('.').collect { it as int }
 if( v[0] < 20 || (v[0] == 20 && v[1] < 4) ) {
-    error "Detected Spectronaut version: ${snVersion}. This pipeline requires:  Spectronaut >= 20.4. Detected binary: ${params.spec_bin}. Please upgrade Spectronaut before running this workflow."
+    error "Detected Spectronaut version: ${snVersion}. This pipeline requires Spectronaut >= 20.4."
 }
 
 //check if intermediates directory exists

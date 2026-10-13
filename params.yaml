@@ -1,7 +1,8 @@
 ## Required
 
 JOB_NAME: "251020_THP1_DMSO_Search_SN20.2"
-spec_bin: "/users/3054755/bin/spectronaut/Spectronaut_20.2.250922.92449/binaries/Spectronaut/bin/SpectronautCMD.dll"
+#spec_bin: "/users/3054755/bin/spectronaut/Spectronaut_20.2.250922.92449/binaries/Spectronaut/bin/SpectronautCMD.dll"
+image_path: "/users/3058937/Spectronaut-nf/v2.3.0/spectronaut21.sif"
 license: "/users/3054755/license/spec_license_no_var.txt"
 #rawfile_dir: "/mnt/scratch2/users/3058937/MZ1_THP1/RAWFILES/"
 FASTA: "uniprotkbHUMAN20240104.bgsfasta"

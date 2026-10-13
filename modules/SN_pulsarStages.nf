@@ -9,7 +9,6 @@ if (!intermediate_dir.exists()) {
 process PULSAR_1_LIB {
 
     label 'SN_nf_pulsar'
-    container = null  // always run Spectronaut outside container
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -53,7 +52,6 @@ process PULSAR_1_LIB {
 process PULSAR_1_LIB_BATCH {
 
     label 'SN_nf_pulsar'
-    container = null  // always run Spectronaut outside container
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -73,6 +71,14 @@ process PULSAR_1_LIB_BATCH {
 
     script:
     """
+	export HOME=\$PWD/.container_home
+	export DOTNET_CLI_HOME=\$HOME
+	export DOTNET_BUNDLE_EXTRACT_BASE_DIR=\$HOME/.bundle
+	export NUGET_PACKAGES=\$HOME/.nuget
+	export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+	export DOTNET_NOLOGO=1
+	mkdir -p \$DOTNET_BUNDLE_EXTRACT_BASE_DIR \$NUGET_PACKAGES
+
         echo "Processing rawfile: ${rawfiles}"
 	
 	dotnet ${SPEC_BIN} -activate ${LICENSE}
@@ -95,7 +101,6 @@ process PULSAR_1_LIB_BATCH {
 process GENERATE_QSP{
 
     label 'SN_nf_combine_psar'
-    container = null  // always run Spectronaut outside container
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -131,7 +136,6 @@ process GENERATE_QSP{
 process PULSAR_3_LIB {
 
     label 'SN_nf_pulsar'
-    container = null  // always run Spectronaut outside container
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -177,7 +181,6 @@ process PULSAR_3_LIB {
 process PULSAR_3_LIB_BATCH {
 
     label 'SN_nf_pulsar'
-    container = null  // always run Spectronaut outside container
 
     input:
     val SPEC_BIN               // path to Spectronaut binary
