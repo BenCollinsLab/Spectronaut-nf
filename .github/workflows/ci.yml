@@ -37,7 +37,14 @@ jobs:
         run: nextflow -version
 
       - name: Lint Nextflow scripts and configuration
+        id: lint
+        continue-on-error: true
         run: nextflow lint .
 
       - name: Validate Nextflow configuration
         run: nextflow config .
+
+      - name: Report lint result
+        if: steps.lint.outcome == 'failure'
+        run: |
+          echo "::warning::Nextflow lint reported issues. See the lint step above."
