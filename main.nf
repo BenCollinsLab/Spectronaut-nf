@@ -16,105 +16,110 @@ include { COMBINE_SNE	} from './modules/combine_sne.nf'
 include { MERGE_SNE	} from './modules/merge_sne.nf'
 include { SAMPLING_RAWFILES  } from './modules/rawfile_sampling.nf'
 
-// ============================================================
-// Spectronaut execution mode
-// ============================================================
-
-def usingContainer = workflow.profile.contains('container')
-
-if (usingContainer && !params.image_path) {
-    exit 1, "ERROR: '-profile container' requires 'image_path' to be set."
-}
-
-if (!usingContainer && !params.spec_bin) {
-    exit 1, "ERROR: running without '-profile container' requires 'spec_bin' to be set."
-}
-
-
-// ============================================================
-// Spectronaut executable
-// ============================================================
-
-def spec_bin
-
-if (usingContainer) {
-
-    // This path exists INSIDE the SIF
-    spec_bin = params.spec_bin ?: '/usr/lib/spectronaut/SpectronautCMD.dll'
-
-} else {
-
-    // This path exists on the HOST
-    spec_bin = resolveFilePath(params.spec_bin)
-}
-
-println "Spectronaut executable: ${spec_bin}"
-
-//check if intermediates directory exists
-def intermediates = new File("${params.intermediates_output}")
-if (!intermediates.exists()) {
-        intermediates.mkdirs()
-        }
-
-//checking if output dir exists
-def out_dir = new File("${params.lib_output}")
-if (!out_dir.exists()) {
-        out_dir.mkdirs()
-	}
-
-//checking if temporary dir exists
-def tmp_dir = new File("${params.tmp_dir}")
-if (!tmp_dir.exists()) {
-        tmp_dir.mkdirs()
-	}
-
 // --- Normalize file-based params ---
 def resolveFilePath(val) {
-    if (!val) return null
-    def f = file(val)
-    return f.exists() ? f.toAbsolutePath().toString() : file("${launchDir}/${val}").toAbsolutePath().toString()
+	if (!val) return null
+	def f = file(val)
+	return f.exists() ? f.toAbsolutePath().toString() : file("${launchDir}/${val}").toAbsolutePath().toString()
 }
-
-// Required
-def license = params.license?.toString()?.trim()
-
-if (!license) {
-    error "License must be provided in params.yaml"
-}
-
-// If the supplied value points to an existing file, read the first line
-if (new File(license).exists()) {
-
-    def licenseFile = new File(license)
-
-    if (!licenseFile.isFile()) {
-        error "License path exists but is not a file: ${license}"
-    }
-
-    license = licenseFile.readLines()[0]?.trim()
-
-    if (!license) {
-        error "License file is empty: ${licenseFile}"
-    }
-
-    println "License loaded from file: ${licenseFile}"
-
-} else {
-
-    // Otherwise treat the supplied value as the license key itself
-    println "License provided directly as a value"
-}
-
-def FASTA   = resolveFilePath(params.FASTA)
-RANDOM_SLEEP = Channel.value(file("${baseDir}/scripts/random_sleep.sh"))
-
-// Optional (normalize only if user defined something other than null)
-def EXT_PSAR    = (params.EXT_PSAR && !params.EXT_PSAR.contains("null")) ? resolveFilePath(params.EXT_PSAR) : ""
-def PROP_DIA    = (params.PROP_DIA && !params.PROP_DIA.contains("null")) ? resolveFilePath(params.PROP_DIA) : ""
-def COND_SETUP  = (params.COND_SETUP && !params.COND_SETUP.contains("null")) ? resolveFilePath(params.COND_SETUP) : ""
-def REPORT = (params.REPORT && !params.REPORT.contains("null")) ? resolveFilePath(params.REPORT) : ""
 
 workflow {
+
+	// ============================================================
+	// Spectronaut execution mode
+	// ============================================================
+
+	def usingContainer = workflow.profile.contains('container')
+
+	if (usingContainer && !params.image_path) {
+		exit 1, "ERROR: '-profile container' requires 'image_path' to be set."
+	}
+
+	if (!usingContainer && !params.spec_bin) {
+		exit 1, "ERROR: running without '-profile container' requires 'spec_bin' to be set."
+	}
+
+	// ============================================================
+	// Spectronaut executable
+	// ============================================================
+
+	def spec_bin
+
+	if (usingContainer) {
+
+		// This path exists INSIDE the SIF
+		spec_bin = params.spec_bin ?: '/usr/lib/spectronaut/SpectronautCMD.dll'
+
+	} else {
+
+		// This path exists on the HOST
+		spec_bin = resolveFilePath(params.spec_bin)
+	}
+
+	println "Spectronaut executable: ${spec_bin}"
+
+	// Create the log directory
+	def logDir = new File(params.log_dir)
+	if (!logDir.exists() && !logDir.mkdirs()) {
+		error "Could not create log directory: ${params.log_dir}"
+	}
+
+	//check if intermediates directory exists
+	def intermediates = new File("${params.intermediates_output}")
+	if (!intermediates.exists()) {
+			intermediates.mkdirs()
+			}
+
+	//checking if output dir exists
+	def out_dir = new File("${params.lib_output}")
+	if (!out_dir.exists()) {
+			out_dir.mkdirs()
+		}
+
+	//checking if temporary dir exists
+	def tmp_dir = new File("${params.tmp_dir}")
+	if (!tmp_dir.exists()) {
+			tmp_dir.mkdirs()
+		}
+
+	// Required
+	def license = params.license?.toString()?.trim()
+
+	if (!license) {
+		error "License must be provided in params.yaml"
+	}
+
+	// If the supplied value points to an existing file, read the first line
+	if (new File(license).exists()) {
+
+		def licenseFile = new File(license)
+
+		if (!licenseFile.isFile()) {
+			error "License path exists but is not a file: ${license}"
+		}
+
+		license = licenseFile.readLines()[0]?.trim()
+
+		if (!license) {
+			error "License file is empty: ${licenseFile}"
+		}
+
+		println "License loaded from file: ${licenseFile}"
+
+	} else {
+
+		// Otherwise treat the supplied value as the license key itself
+		println "License provided directly as a value"
+	}
+
+	def FASTA   = resolveFilePath(params.FASTA)
+	RANDOM_SLEEP = Channel.value(file("${baseDir}/scripts/random_sleep.sh"))
+
+	// Optional (normalize only if user defined something other than null)
+	def EXT_PSAR    = (params.EXT_PSAR && !params.EXT_PSAR.contains("null")) ? resolveFilePath(params.EXT_PSAR) : ""
+	def PROP_DIA    = (params.PROP_DIA && !params.PROP_DIA.contains("null")) ? resolveFilePath(params.PROP_DIA) : ""
+	def COND_SETUP  = (params.COND_SETUP && !params.COND_SETUP.contains("null")) ? resolveFilePath(params.COND_SETUP) : ""
+	def REPORT = (params.REPORT && !params.REPORT.contains("null")) ? resolveFilePath(params.REPORT) : ""
 
 	log.info "Pipeline Name: ${workflow.manifest.name}"
 	log.info "Author: ${workflow.manifest.author}"
