@@ -1,11 +1,5 @@
 // SN_dia.nf
 
-//checking if libraries dir exists
-def dia_dir = new File("${params.dia_output}")
-if (!dia_dir.exists()) {
-        dia_dir.mkdirs()
-        }
-
 process WORKFLOW_DIA {
 	
 	label 'SN_nf_dia_search'

@@ -4,6 +4,8 @@ process COMBINE_PSAR{
 
     label 'SN_nf_combine_psar'
 
+    publishDir "${params.psar_lib}", mode: 'copy'
+
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
     val LICENSE                // Second input: license key
@@ -14,8 +16,6 @@ process COMBINE_PSAR{
 
     output:
     path "${params.JOB_NAME}.kit", emit: psar_lib
-    
-    publishDir "${params.psar_lib}", mode: 'copy'
 
     script:
     """

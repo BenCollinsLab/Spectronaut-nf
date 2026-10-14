@@ -1,14 +1,10 @@
 // SN_pulsarStages.nf
 
-//checking if libraries dir exists
-def intermediate_dir = new File("${params.intermediate_psar}")
-if (!intermediate_dir.exists()) {
-        intermediate_dir.mkdirs()
-        }
-
 process PULSAR_1_LIB {
 
     label 'SN_nf_pulsar'
+	// Use publishDir to save the output to the out_lib directory
+	publishDir "${params.intermediate_psar}", mode: 'copy'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -17,14 +13,11 @@ process PULSAR_1_LIB {
     val rawfile               // Third input: One rawfile from the raw_d folder
     val PROP_DIA
     val pulsarStep
-	
+
     output:
     tuple val(rawfile), path("${rawfile.getBaseName()}.psar"), emit: psar_with_raw
 
     // path "${rawfile.getBaseName()}.psar", emit: intermediate_psar // Emit the .psar file created for each rawfile
-
-    // Use publishDir to save the output to the out_lib directory
-    publishDir "${params.intermediate_psar}", mode: 'copy'
 
     // Define output and error logs using task variables
     // error = "logs/${task.process}.${task.id}.err"
@@ -33,8 +26,8 @@ process PULSAR_1_LIB {
     script:
     """
         echo "Processing rawfile: ${rawfile}"
-	
-	dotnet ${SPEC_BIN} activate ${LICENSE}
+
+		dotnet ${SPEC_BIN} activate ${LICENSE}
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
@@ -43,15 +36,17 @@ process PULSAR_1_LIB {
         -a ${rawfile.getBaseName()}\
         -n ${rawfile.getBaseName()}\
         -fasta "${FASTA}"\
-	${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
-	${PROP_DIA ? "-rs ${PROP_DIA}" : ""}\
-	--pulsarStage ${pulsarStep}	
+		${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
+		${PROP_DIA ? "-rs ${PROP_DIA}" : ""}\
+		--pulsarStage ${pulsarStep}
     """
 }
 
 process PULSAR_1_LIB_BATCH {
 
     label 'SN_nf_pulsar'
+    // Use publishDir to save the intermediate output to the intermediates directory
+    publishDir "${params.intermediate_psar}", mode: 'copy', pattern: '*.psar'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -66,27 +61,24 @@ process PULSAR_1_LIB_BATCH {
 
     // path "${task.index}.psar", emit: intermediate_psar // Emit the intermediate .psar file created for each rawfile
 
-    // Use publishDir to save the intermediate output to the intermediates directory
-    publishDir "${params.intermediate_psar}", mode: 'copy', pattern: '*.psar'
-
     script:
     """
-	echo "Processing rawfile: ${rawfiles}"
-	echo "Spectronaut: ${SPEC_BIN}"
-	echo "FASTA: ${FASTA}"
+		echo "Processing rawfile: ${rawfiles}"
+		echo "Spectronaut: ${SPEC_BIN}"
+		echo "FASTA: ${FASTA}"
 
-	dotnet "${SPEC_BIN}" activate "${LICENSE}"
+		dotnet "${SPEC_BIN}" activate "${LICENSE}"
 
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
         ${rawfiles.collect { "-r ${it}" }.join(' ')}\
         -o ${params.intermediates_output}\
         -a ${task.index}\
-	-n ${task.index}\
+		-n ${task.index}\
         -fasta "${FASTA}"\
-	${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
+		${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
         ${PROP_DIA ? "-rs ${PROP_DIA}" : ""}\
-	--pulsarStage ${pulsarStep}
+		--pulsarStage ${pulsarStep}
 
         echo "Nextflow Task ID: ${task.index}"
     """
@@ -95,6 +87,7 @@ process PULSAR_1_LIB_BATCH {
 process GENERATE_QSP{
 
     label 'SN_nf_combine_psar'
+	publishDir "${params.intermediates_output}", mode: 'copy', pattern: '*.qsp'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -107,8 +100,6 @@ process GENERATE_QSP{
     output:
     path "${params.JOB_NAME}.qsp", emit: qsp_file
 
-    publishDir "${params.intermediates_output}", mode: 'copy', pattern: '*.qsp'
-
     script:
     """
         dotnet ${SPEC_BIN} activate ${LICENSE}
@@ -118,7 +109,7 @@ process GENERATE_QSP{
         -sad ${params.intermediate_psar}\
         -k ${params.JOB_NAME}\
         -o .\
-	--noOutputSubfolder\
+		--noOutputSubfolder\
         -n ${params.JOB_NAME}\
         -fasta ${FASTA}\
         ${PROP_DIA ? "-rs ${PROP_DIA}" : ""}\
@@ -130,6 +121,8 @@ process GENERATE_QSP{
 process PULSAR_3_LIB {
 
     label 'SN_nf_pulsar'
+    // Use publishDir to save the output to the out_lib directory
+    publishDir "${params.intermediate_psar}", mode: 'copy'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -144,9 +137,6 @@ process PULSAR_3_LIB {
 
     // path "${rawfile.getBaseName()}.psar", emit: intermediate_psar // Emit the .psar file created for each rawfile
 
-    // Use publishDir to save the output to the out_lib directory
-    publishDir "${params.intermediate_psar}", mode: 'copy'
-
     // Define output and error logs using task variables
     // error = "logs/${task.process}.${task.id}.err"
     // output = "logs/${task.process}.${task.id}.out"
@@ -160,14 +150,14 @@ process PULSAR_3_LIB {
         dotnet ${SPEC_BIN} lg -se Pulsar\
         -setTemp ${params.tmp_dir}\
         -r ${params.rawfile_dir}/${rawfile}\
-	-sa ${params.psar_file}\
+		-sa ${params.psar_file}\
         -o ${params.intermediates_output}\
         -a ${params.psar_file}\
         -n ${rawfile.getBaseName()}\
         -fasta ${FASTA}\
         ${params.PROP_SEARCH ? " -es ${params.PROP_SEARCH}" : ""}\
         ${PROP_DIA ? "-rs ${PROP_DIA}" : ""}\
-	--optimizedModels ${params.intermediates_output}/${qsp_file}\
+		--optimizedModels ${params.intermediates_output}/${qsp_file}\
         --pulsarStage ${pulsarStep}
     """
 }
@@ -175,6 +165,7 @@ process PULSAR_3_LIB {
 process PULSAR_3_LIB_BATCH {
 
     label 'SN_nf_pulsar'
+    publishDir "${params.intermediate_psar}", mode: 'copy'
 
     input:
     val SPEC_BIN
@@ -182,14 +173,12 @@ process PULSAR_3_LIB_BATCH {
     path FASTA
     val PROP_DIA
     val pulsarStep
-    
+
     // path rawfiles
     tuple path(rawfiles), path(psar_file), path(qsp_file)
 
     output:
     path "${task.index}.psar", emit: intermediate_psar
-
-    publishDir "${params.intermediate_psar}", mode: 'copy'
 
     script:
     """
@@ -199,7 +188,7 @@ process PULSAR_3_LIB_BATCH {
 	echo "Rawfiles: ${rawfiles}"
         echo "PSAR: ${psar_file}"
 	echo "QSP: ${qsp_file}"
-	
+
         dotnet "${SPEC_BIN}" activate ${LICENSE}
 
         dotnet "${SPEC_BIN}" lg -se Pulsar\

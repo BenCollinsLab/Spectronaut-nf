@@ -7,8 +7,6 @@ include { PULSAR_3_LIB } from './modules/SN_pulsarStages.nf'
 include { PULSAR_3_LIB_BATCH } from './modules/SN_pulsarStages.nf'
 
 include { COMBINE_PSAR	} from './modules/combine_psar.nf'
-include { WORKFLOW_LIB	} from './modules/SN_pulsar.nf'
-include { WORKFLOW_LIB_BATCH } from './modules/SN_pulsar.nf'
 include { WORKFLOW_DIA	} from './modules/SN_dia.nf'
 include { WORKFLOW_DIA_BATCH } from './modules/SN_dia.nf'
 include { COMBINE_SNE_REPORT	} from './modules/combine_sne.nf'
@@ -18,8 +16,8 @@ include { SAMPLING_RAWFILES  } from './modules/rawfile_sampling.nf'
 
 // --- Normalize file-based params ---
 def resolveFilePath(val) {
-	if (!val) return null
-	def f = file(val)
+        if (!val) return null
+        def f = file(val)
 	return f.exists() ? f.toAbsolutePath().toString() : file("${launchDir}/${val}").toAbsolutePath().toString()
 }
 
@@ -32,11 +30,11 @@ workflow {
 	def usingContainer = workflow.profile.contains('container')
 
 	if (usingContainer && !params.image_path) {
-		exit 1, "ERROR: '-profile container' requires 'image_path' to be set."
+	    exit 1, "ERROR: '-profile container' requires 'image_path' to be set."
 	}
 
 	if (!usingContainer && !params.spec_bin) {
-		exit 1, "ERROR: running without '-profile container' requires 'spec_bin' to be set."
+	    exit 1, "ERROR: running without '-profile container' requires 'spec_bin' to be set."
 	}
 
 	// ============================================================
@@ -128,11 +126,16 @@ workflow {
 	log.info "Main Script: ${workflow.manifest.mainScript}"
 	log.info "Nextflow Version Required: ${workflow.manifest.nextflowVersion}"
 	log.info "Pipeline Version: ${workflow.manifest.version}"
-	
+
 	if (params.sample_size) {
 		log.info "INFO: Executing random sampling"
-		sampled_tsv = SAMPLING_RAWFILES(params.rawfile_dir, params.sample_size, 0)
-		
+		sampled_tsv = SAMPLING_RAWFILES(
+			params.rawfile_dir,
+			params.sample_size,
+			0,
+			file("${baseDir}/scripts/sampling_rawfiles.py")
+		)
+
 		// When the TSV file is emitted, read and process it
 		rawfiles_for_lib = sampled_tsv
 				.map { it.toString() }
@@ -145,30 +148,30 @@ workflow {
 				}
 				.flatten()
 				.ifEmpty { error "TSV file exists but has no usable paths." }
-		
+
 		// Print the loaded paths
 		rawfiles_for_lib.subscribe { println "Rawfile: $it" }
-		
+
 		// Count and print how many rawfiles were loaded
 		rawfiles_for_lib.count().subscribe { println "Loaded $it raw files for processing" }
-		
+
 	} else {
 		// Load .d and other rawfiles from the directory
 		rawfiles_for_lib = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 					.ifEmpty { error "No Bruker/raw/wiff/mzML files found in ${params.rawfile_dir}" }
 					.map { it.toAbsolutePath().toString() }
-	
+
 		rawfiles_for_lib.count().subscribe { println "Found $it raw files in ${params.rawfile_dir}" }
 	}
 
 	// Static parameter channels
 	Spectronaut = Channel.value(spec_bin)
 	SN_license = Channel.value(license)
-	
+
 	// Process each raw file in parallel
-	
+
 	def batchSize = params.batch_size ? params.batch_size.toInteger() : 1
-	
+
 	println "Batch size: ${batchSize}"
 
 	if (batchSize > 1) {
@@ -192,7 +195,7 @@ workflow {
 
 	rawfile_dir = Channel.value(params.rawfile_dir)
 	sample_size = Channel.value(params.sample_size)
-	
+
 	qsp_file = GENERATE_QSP(Spectronaut, SN_license, FASTA, rawf_mapped_psar.collect(), PROP_DIA ?: "", "pulsarStep2")
 
 	qsp_file.view { "QSP OUTPUT: $it" }
@@ -210,16 +213,16 @@ workflow {
 	kit_file.view { "KIT OUTPUT: $it" }
 
 	kit_file_value = kit_file.first()
-	
+
 	rawfiles_for_dia = Channel.fromPath("${params.rawfile_dir}/*.{d,raw,RAW,wiff,mzML}", type: 'any', checkIfExists: true, glob: true)
 		.ifEmpty { error "Cannot find any Bruker rawfile on ${params.rawfile_dir}"}
 	rawfiles_for_dia.set { rawfiles_for_dia_mapped }
-	
+
 	// Check if excludePattern is defined and filter rawfiles accordingly
 	if (params.excludePattern) {
 		log.info "Exclude pattern defined: '${params.excludePattern}'"
 		filtered_rawfiles = rawfiles_for_dia.filter { !it.contains(params.excludePattern) }
-		.ifEmpty 
+		.ifEmpty
 		{ println "No rawfiles matched the exclude pattern. Using all rawfiles."
 		return rawfiles_for_dia
 		}
@@ -228,8 +231,8 @@ workflow {
 		log.info "Exclude pattern not defined. Considering all rawfiles."
 		filtered_rawfiles = rawfiles_for_dia
 	}
-	
-	
+
+
 	if (batchSize > 1) {
 		batchSize_dia = batchSize * 2
 		rawfile_batches_dia = rawfiles_for_dia
@@ -237,9 +240,9 @@ workflow {
 			.buffer(size: batchSize_dia, remainder: true)
 
 		rawfile_batches_dia.view { batch -> "DIA BATCH (${batch.size()} files): ${batch}"}
-                
+
 		log.info "Processing raw files in batches of ${batchSize_dia}"
-                
+
                 dia_output = WORKFLOW_DIA_BATCH(Spectronaut, SN_license, FASTA, kit_file_value, rawfile_batches_dia, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
 
         } else {
@@ -247,10 +250,10 @@ workflow {
                 filtered_rawfiles.subscribe { println "Processing Mapped rawfile: $it for DIA search" }
                 dia_output = WORKFLOW_DIA(Spectronaut, SN_license, FASTA, kit_file_value, filtered_rawfiles, EXT_PSAR ?: "", PROP_DIA ?: "", RANDOM_SLEEP)
         }
-	
-	
+
+
 	dia_output.view { "DIA Output: $it" }
-	
+
 	merged_input = dia_output.collect()
 
 	def rawDir = new File(params.rawfile_dir).getAbsoluteFile()
@@ -259,7 +262,7 @@ workflow {
 		(f.isFile() && validExtensions.any { f.name.endsWith(it) }) ||
 		(f.isDirectory() && f.name.endsWith('.d'))
 	} ?: 0
-	
+
 	println "Number of raw files: $fileCount"
 
 	if (fileCount > params.max_files_for_ManageSNE && REPORT) {
@@ -268,7 +271,7 @@ workflow {
 	} else if (fileCount > params.max_files_for_ManageSNE) {
 		log.info "INFO: SNE files will be subjected to CombineSNE as there are more than ${params.max_files_for_ManageSNE} raw files"
 		COMBINE_SNE(Spectronaut, SN_license, FASTA, merged_input, PROP_DIA)
-	
+
         } else {
 		log.info "INFO: Executing ManageSNE to merge all SNEs to a single SNE file"
 		MERGE_SNE(Spectronaut, SN_license, merged_input, PROP_DIA ?: "", REPORT ?: "", COND_SETUP ?: "")
