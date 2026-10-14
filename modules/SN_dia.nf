@@ -1,15 +1,8 @@
 // SN_dia.nf
 
-//checking if libraries dir exists
-def dia_dir = new File("${params.dia_output}")
-if (!dia_dir.exists()) {
-        dia_dir.mkdirs()
-        }
-
 process WORKFLOW_DIA {
 	
 	label 'SN_nf_dia_search'
-	container = null  // always run Spectronaut outside container
 	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
@@ -19,7 +12,8 @@ process WORKFLOW_DIA {
 	path rawfile               // Third input: One rawfile from the raw_d folder
 	val EXT_PSAR
 	val PROP_DIA
-	
+	path random_sleep
+
 	output:
 	path "${params.JOB_NAME}.kit", emit: kit_file    // Output directory for each rawfile
 	
@@ -29,9 +23,9 @@ process WORKFLOW_DIA {
 
     	script:
 	"""
-	bash ${baseDir}/scripts/random_sleep.sh
+	bash "${random_sleep}"
 	
-	dotnet ${SPEC_BIN} -activate ${LICENSE}	
+	dotnet ${SPEC_BIN} activate ${LICENSE}	
 
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir} -r ${params.rawfile_dir}/${rawfile}\
 	-o ${params.dia_output}\
@@ -47,7 +41,6 @@ process WORKFLOW_DIA {
 process WORKFLOW_DIA_BATCH {
 	
 	label 'SN_nf_dia_search'
-	container = null  // always run Spectronaut outside container
 	
 	input:
 	val SPEC_BIN               // First input: path to Spectronaut binary
@@ -57,6 +50,7 @@ process WORKFLOW_DIA_BATCH {
 	path rawfiles              // Third input: One rawfile from the raw_d folder
 	val EXT_PSAR
 	val PROP_DIA
+	path random_sleep
 
 	output:
 	path "${params.JOB_NAME}.kit", emit: kit_file
@@ -70,9 +64,9 @@ process WORKFLOW_DIA_BATCH {
 	"""
 	echo "Processing rawfiles: ${rawfiles}"
 	
-	bash ${baseDir}/scripts/random_sleep.sh
+	bash "${random_sleep}"
 	
-	dotnet ${SPEC_BIN} -activate ${LICENSE}
+	dotnet ${SPEC_BIN} activate ${LICENSE}
 	
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir}\
 	${rawfiles.collect { "-r ${params.rawfile_dir}/${it}" }.join(' ')}\

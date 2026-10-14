@@ -3,7 +3,7 @@
 process MERGE_SNE {
 	
 	label 'SN_nf_combine_sne'
-	container = null
+	
 	//errorStrategy 'retry'
 	
 	input:
@@ -22,7 +22,7 @@ process MERGE_SNE {
 	script:
 	"""
 	
-	dotnet ${SPEC_BIN} -activate ${LICENSE}
+	dotnet ${SPEC_BIN} activate ${LICENSE}
 
 	dotnet ${SPEC_BIN} manageSNE --merge -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB_NAME} ${params.PROP_SEARCH ?: ''}\
 	${COND_SETUP ? "-con ${COND_SETUP}" : ""} ${REPORT ? "-rs ${REPORT}" : ""} ${PROP_DIA ? "-s ${PROP_DIA}" : ""}

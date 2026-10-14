@@ -1,9 +1,10 @@
 ## Required
 
 JOB_NAME: "251020_THP1_DMSO_Search_SN20.2"
-spec_bin: "/users/3054755/bin/spectronaut/Spectronaut_20.2.250922.92449/binaries/Spectronaut/bin/SpectronautCMD.dll"
-license: "/users/3054755/license/spec_license_no_var.txt"
-#rawfile_dir: "/mnt/scratch2/users/3058937/MZ1_THP1/RAWFILES/"
+#spec_bin: null
+image_path: null
+license: "path/to/your/spec_license_no_var.txt"
+#rawfile_dir: "path/to/your/RAWFILES/"
 FASTA: "uniprotkbHUMAN20240104.bgsfasta"
 
 ## Optional (can be left out, defaults kick in)
@@ -15,6 +16,9 @@ COND_SETUP: "ConditionSetup.tsv"
 REPORT: "Precursor_fragment_info.rs"
 # PROP_DIA: "Kuiper_PTM_Probing_Search.prop"
 EXT_PSAR: "251020_THP1_DMSO_Search_SN20.2.psar"
+
+### Define the executor used in your HPC ###
+executor: 'slurm'
 
 ### Number of Parallel Searches ###
 executor_queueSize: 4

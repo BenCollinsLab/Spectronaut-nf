@@ -1,0 +1,58 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%files
+    Spectronaut_*.deb /opt/Spectronaut.deb
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+
+    apt-get update
+    apt-get install -y \
+        wget \
+        ca-certificates \
+        libgomp1
+
+    # Microsoft repository for .NET 8
+    wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb \
+        -O /tmp/packages-microsoft-prod.deb
+
+    dpkg -i /tmp/packages-microsoft-prod.deb
+    rm -f /tmp/packages-microsoft-prod.deb
+
+    apt-get update
+    apt-get install -y dotnet-sdk-8.0
+
+    # Install Spectronaut
+    apt-get install -y /opt/Spectronaut.deb
+
+    rm -f /opt/Spectronaut.deb
+
+    # Clean package caches
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+%runscript
+    exec spectronaut "$@"
+
+%labels
+    Author Collins_Lab
+    Software Spectronaut
+    BaseOS Ubuntu-22.04
+    DotNet 8
+
+%help
+    Apptainer container for Spectronaut.
+
+    The Spectronaut .deb installer should be placed
+    in the same directory as this definition file.
+
+    Expected filename:
+        Spectronaut_*.deb
+
+    Build:
+        apptainer build spectronaut.sif spectronaut.def
