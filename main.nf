@@ -68,6 +68,12 @@ workflow {
 			intermediates.mkdirs()
 			}
 
+    //checking if DIA output dir exists
+    def dia_out = new File("${params.dia_output}")
+    if (!dia_out.exists()) {
+			dia_out.mkdirs()
+            }
+
 	//checking if output dir exists
 	def out_dir = new File("${params.lib_output}")
 	if (!out_dir.exists()) {
