@@ -1,16 +1,10 @@
 // SN_pulsar.nf
 
-//checking if libraries dir exists
-def libs_dir = new File("${params.psar_lib}")
-if (!libs_dir.exists()) {
-        libs_dir.mkdirs()
-        }
-
 process WORKFLOW_LIB {
 
     label 'SN_nf_pulsar'
-    container = null  // always run Spectronaut outside container
-	publishDir "${params.psar_lib}", mode: 'copy'
+
+    publishDir "${params.psar_lib}", mode: 'copy'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
@@ -50,8 +44,8 @@ process WORKFLOW_LIB {
 process WORKFLOW_LIB_BATCH {
 
     label 'SN_nf_pulsar'
-    container = null  // always run Spectronaut outside container
-	publishDir "${params.psar_lib}", mode: 'copy'
+
+    publishDir "${params.psar_lib}", mode: 'copy'
 
     input:
     val SPEC_BIN               // First input: path to Spectronaut binary
