@@ -1,7 +1,7 @@
 # Changelog
 
 This file records user-facing changes identified by comparing version tags in the
-[Spectronaut-nf repository](https://github.com/BenCollinsLab/Spectronaut-nf).
+[Spectronaut-nf repository]([https://github.com/BenCollinsLab/Spectronaut-nf/releases]).
 Entries are based on repository contents and tagged commits. Older versions for which
 a reliable tag-to-tag change history was not available are not reconstructed here.
 
