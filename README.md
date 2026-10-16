@@ -162,5 +162,31 @@ results/
 └── work/
 ```
 
+## Testing and Continuous Integration
+
+Spectronaut-nf uses GitHub Actions to validate the Nextflow code.
+
+### Local validation
+
+Run:
+
+    nextflow lint .
+
+This checks the Nextflow code for syntax and style issues.
+
+### Workflow testing
+
+Linting does not guarantee that the pipeline executes successfully.
+Changes affecting workflow behaviour should also be tested with an
+appropriate dataset and execution profile.
+
+### Continuous Integration
+
+The GitHub Actions workflow is defined in:
+
+`.github/workflows/ci.yml`
+
+It runs automated validation when the configured repository events occur.
+
 ## Citation
 Spectronaut-nf: A Nextflow Pipeline for Parallel Processing of DIA Data with Spectronaut [bioRxiv, 2026](https://www.biorxiv.org/content/10.64898/2026.07.29.741433v1)
