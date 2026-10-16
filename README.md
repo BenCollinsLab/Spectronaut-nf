@@ -188,5 +188,13 @@ The GitHub Actions workflow is defined in:
 
 It runs automated validation when the configured repository events occur.
 
+## Documentation and Community
+
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+- **Report a bug or request a feature:** [GitHub Issues](https://github.com/BenCollinsLab/Spectronaut-nf/issues)
+- **Contributing guidelines:** [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Testing and CI:** See the Testing and Continuous Integration section above.
+- **Releases:** [GitHub Releases](https://github.com/BenCollinsLab/Spectronaut-nf/releases)
+
 ## Citation
 Spectronaut-nf: A Nextflow Pipeline for Parallel Processing of DIA Data with Spectronaut [bioRxiv, 2026](https://www.biorxiv.org/content/10.64898/2026.07.29.741433v1)
