@@ -134,7 +134,7 @@ nextflow -bg run /path/to/main.nf \
          -profile container \
          -params-file /path/to/params.yaml >> nextflow_cmd.log
 ```
-Note: If users want to run Spectronaut in its native format (i.e., SpectronautCMD.dll) without containerizing it, either set ```-profile host``` or dont use it at all.
+> Note: If users want to run Spectronaut in its native format (i.e., SpectronautCMD.dll) without containerizing it, either set ```-profile host``` or dont use it at all.
 
 ## Resume Failed Runs
 ```
@@ -143,7 +143,7 @@ nextflow -bg run /path/to/main.nf \
          -params-file /path/to/params.yaml \
          -resume >> nextflow_cmd.log
 ```
-Nextflow automatically reuses previously completed tasks and continues from the last successful checkpoint.
+When users `-resume` in their command, Nextflow automatically resumes the search from previously completed tasks (Cached).
 
 ## Output
 | Output Folder | Description |
