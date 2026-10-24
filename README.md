@@ -180,6 +180,15 @@ Linting does not guarantee that the pipeline executes successfully.
 Changes affecting workflow behaviour should also be tested with an
 appropriate dataset and execution profile.
 
+Users can test Spectronaut-nf on their HPC system using the provided FASTA database and publicly available diaPASEF raw files from the PRIDE Archive. Since mass spectrometry raw files are large, they are not included directly in this repository.
+
+#### Test Dataset
+
+- FASTA database: Use the FASTA file provided in this repository.
+- diaPASEF raw files: Download the raw files from the PRIDE Archive using the accession PXD078858.
+- Spectronaut: Ensure that Spectronaut is installed and activated with a valid licence.
+- HPC environment: Ensure that Nextflow and the required dependencies are available and that the pipeline is configured for your cluster's executor and resource limits.
+
 ### Continuous Integration
 
 The GitHub Actions workflow is defined in:
