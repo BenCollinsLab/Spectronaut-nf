@@ -91,11 +91,11 @@ Define or modify all DIA search-related inputs in `params.yaml`:
 | Parameter | Description |
 |--------------|--------------------------------------------------------|
 | `JOB_NAME` | Unique identifier/name for your Spectronaut search job |
-| `spec_bin` | Absolute path to the Spectronaut command-line executable (SpectronautCMD.dll) |
+| `spec_bin` | Absolute path to the Spectronaut command-line executable (SpectronautCMD.dll). If you use `spec_bin`, comment `image_path`. |
+| `image_path` | Absolute path to the containerized Spectronaut image file (spectronaut.sif). If you use `image_path`, comment `spec_bin`. |
 | `license` | Absolute path to your Spectronaut license file |
-| `rawfile_dir` | Directory path containing all input LC-MS/MS raw data files |
+| `rawfile_dir` | Directory path containing all input LC-MS/MS raw data files (Default path is ./raw_d/) |
 | `FASTA` | Protein sequence database file in bgsfasta format for peptide identification |
-| `EXT_PSAR` | External Spectronaut result file (.psar) to use as input for DIA search |
 
 #### Optional Parameters
 | Parameter | Description |
@@ -106,6 +106,7 @@ Define or modify all DIA search-related inputs in `params.yaml`:
 | `COND_SETUP` | TSV file specifying experimental condition/sample grouping metadata |
 | `REPORT` | Spectronaut report template (.rs file) to customize output report columns and format |
 | `PROP_DIA` | Optional custom Spectronaut search parameters file (.prop) for advanced search configuration |
+| `EXT_PSAR` | External Spectronaut result file (.psar) to use as input for DIA search |
 | `max_files_for_ManageSNE` | Maximum number of SNE result files threshold for manage SNE process execution. If the total number of raw files exceeds this cutoff, the pipeline will execute combineSNE process instead. Default: 150 (adjust based on available HPC/Cloud resources for large-scale SNE file merging) |
 
 ### HPC Configuration
@@ -130,12 +131,15 @@ This will be followed by setting up process-specific partition requirements such
 ## Running Spectronaut-nf
 ```
 nextflow -bg run /path/to/main.nf \
+         -profile container \
          -params-file /path/to/params.yaml >> nextflow_cmd.log
 ```
+Note: If users want to run Spectronaut in its native format (i.e., SpectronautCMD.dll) without containerizing it, either set ```-profile host``` or dont use it at all.
 
 ## Resume Failed Runs
 ```
 nextflow -bg run /path/to/main.nf \
+         -profile container \
          -params-file /path/to/params.yaml \
          -resume >> nextflow_cmd.log
 ```
