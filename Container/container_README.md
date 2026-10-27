@@ -193,9 +193,9 @@ Raw Spectronaut `.d` data should remain on the HPC filesystem and be made availa
 ```bash
 docker build -t spectronaut:21.1.260825.94842 .
 
-docker run --rm     spectronaut:21.1.260825.94842     dotnet --version
+docker run --rm spectronaut:21.1.260825.94842 dotnet --version
 
-docker save     -o spectronaut_21.1.260825.94842.tar     spectronaut:21.1.260825.94842
+docker save -o spectronaut_21.1.260825.94842.tar spectronaut:21.1.260825.94842
 ```
 
 Transfer the `.tar` file to HPC.
@@ -203,11 +203,11 @@ Transfer the `.tar` file to HPC.
 ### HPC
 
 ```bash
-apptainer build --force     spectronaut.sif     docker-archive:spectronaut_21.1.260825.94842.tar
+apptainer build --force spectronaut.sif docker-archive:spectronaut_21.1.260825.94842.tar
 
 apptainer exec spectronaut.sif dotnet --version
 
-apptainer exec spectronaut.sif     dotnet /usr/lib/spectronaut/SpectronautCMD.dll
+apptainer exec spectronaut.sif dotnet /usr/lib/spectronaut/SpectronautCMD.dll
 ```
 
 The last command should report the license status. A `No valid license found!` message is expected before activation.
