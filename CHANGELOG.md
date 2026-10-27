@@ -5,6 +5,11 @@ This file records user-facing changes identified by comparing version tags in th
 Entries are based on repository contents and tagged commits. Older versions for which
 a reliable tag-to-tag change history was not available are not reconstructed here.
 
+## [Unreleased]
+
+### Changed
+- Updated the container profile to bind-mount the host user's `.config` directory into the Apptainer container.
+- Simplified Docker and Apptainer command examples in the container build documentation.
 ## [v2.8.0](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.8.0)
 
 ### Changed
