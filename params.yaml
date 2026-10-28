@@ -5,16 +5,16 @@ JOB_NAME: "251020_THP1_DMSO_Search_SN20.2"
 image_path: null
 license: "path/to/your/spec_license_no_var.txt"
 #rawfile_dir: "path/to/your/RAWFILES/"
-FASTA: "uniprotkbHUMAN20240104.bgsfasta"
+FASTA: "input_files/uniprotkbHUMAN20240104.bgsfasta"
 
 ## Optional (can be left out, defaults kick in)
 # sample_size: 104
 batch_size: 2 # If not used, the is default is searching individual raw file for library (Pulsar)
 excludePattern: "pooled"
 
-COND_SETUP: "ConditionSetup.tsv"
-REPORT: "Precursor_fragment_info.rs"
-# PROP_DIA: "Kuiper_PTM_Probing_Search.prop"
+COND_SETUP: "input_files/ConditionSetup.tsv"
+REPORT: "input_files/Precursor_fragment_info.rs"
+# PROP_DIA: "input_files/Kuiper_PTM_Probing_Search.prop"
 EXT_PSAR: "251020_THP1_DMSO_Search_SN20.2.psar"
 
 ### Define the executor used in your HPC ###
