@@ -5,7 +5,7 @@ This file records user-facing changes identified by comparing version tags in th
 Entries are based on repository contents and tagged commits. Older versions for which
 a reliable tag-to-tag change history was not available are not reconstructed here.
 
-## [Unreleased]
+## [v2.9.0]()
 
 ### Changed
 - Updated the container profile to bind-mount the host user's `.config` directory into the Apptainer container.
