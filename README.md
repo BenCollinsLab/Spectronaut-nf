@@ -191,7 +191,7 @@ Users can test Spectronaut-nf on their HPC system using the provided FASTA datab
 #### Test Dataset
 
 - FASTA database: Use the FASTA file provided in this repository.
-- diaPASEF raw files: Download the raw files from the PRIDE Archive using the accession PXD078858.
+- diaPASEF raw files: Download the raw files from the PRIDE Archive using the accession [PXD078858](https://www.ebi.ac.uk/pride/archive/projects/PXD078858).
 - Spectronaut: Ensure that Spectronaut is installed and activated with a valid licence.
 - HPC environment: Ensure that Nextflow and the required dependencies are available and that the pipeline is configured for your cluster's executor and resource limits.
 
