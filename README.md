@@ -23,7 +23,7 @@ The pipeline consists of six main processes:
 6. Combine/merge SNE
 
 ## Installation
-A detailed description on how to install the linux compatible SpectronautCMD.dll or the containerized image (*.sif) file is available in [Deploying Spectronaut on an HPC system](https://github.com/BenCollinsLab/Spectronaut-nf/edit/main/README.md#deploying-spectronaut-on-an-hpc-system).
+A detailed description on how to install the linux compatible SpectronautCMD.dll or the containerized image (*.sif) file is available in [Deploying Spectronaut on an HPC system](https://github.com/BenCollinsLab/Spectronaut-nf/tree/main#deploying-spectronaut-on-an-hpc-system).
 
 ### clone Spectronaut-nf repository
 ```
