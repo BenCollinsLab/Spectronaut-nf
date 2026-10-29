@@ -23,6 +23,8 @@ The pipeline consists of six main processes:
 6. Combine/merge SNE
 
 ## Installation
+A detailed description on how to install the linux compatible SpectronautCMD.dll or the containerized image (*.sif) file is available in [Deploying Spectronaut on an HPC system](https://github.com/BenCollinsLab/Spectronaut-nf/edit/main/README.md#deploying-spectronaut-on-an-hpc-system).
+
 ### clone Spectronaut-nf repository
 ```
 git clone https://github.com/BenCollinsLab/Spectronaut-nf
@@ -200,6 +202,97 @@ The GitHub Actions workflow is defined in:
 `.github/workflows/ci.yml`
 
 It runs automated validation when the configured repository events occur.
+
+## Deploying Spectronaut on an HPC System
+
+`Spectronaut-nf` requires an authorised installation of Spectronaut and a valid licence. Since Spectronaut is proprietary software, its installer and licence are not distributed with this repository.
+
+Users can deploy Spectronaut on an HPC system using either a native installation or an Apptainer/Singularity container, depending on their cluster configuration and local policies.
+
+### Option 1: Native Spectronaut Installation
+
+If Spectronaut is installed directly on the HPC system, configure `spec_bin` in `params.yaml` to point to the installed `SpectronautCMD.dll`.
+
+**Important:** Do not copy only `SpectronautCMD.dll` from another machine. The command-line application may depend on additional files and libraries in the Spectronaut installation directory. The complete installation and its dependencies must remain accessible.
+
+1. Obtain the Spectronaut Linux installer from an authorised Biognosys source.
+2. Install Spectronaut according to the vendor's instructions. If administrator privileges are required, contact your HPC administrator.
+3. Where supported, install Spectronaut in a persistent software directory accessible to the compute nodes. For example:
+
+   ```text
+   /shared/apps/spectronaut/<version>/
+   ```
+
+   The actual directory structure depends on the installation method. Identify the location of `SpectronautCMD.dll` within the complete installation.
+4. Ensure that the required .NET runtime is available in the job environment and that the installation and licence are accessible from the compute nodes.
+5. Configure `params.yaml` with the appropriate paths:
+
+   ```yaml
+   spec_bin: "/shared/apps/spectronaut/<version>/SpectronautCMD.dll"
+   license: "/shared/licenses/spectronaut/<licence-file>"
+   ```
+
+   Replace these example paths with the actual locations on your HPC system.
+
+Run the pipeline using the host execution profile, for example:
+
+```bash
+nextflow run main.nf \
+    -profile host \
+    -params-file params.yaml
+```
+
+Use the profile and parameter names defined in your local Nextflow configuration.
+
+### Option 2: Apptainer/Singularity Container
+
+For HPC systems supporting Apptainer/Singularity, users can prepare a container image containing Spectronaut and its required runtime dependencies.
+
+This approach packages the software environment into a single `.sif` image that can be stored in a shared directory and executed on compatible compute nodes.
+
+Follow the instructions in the [Spectronaut Container Setup Guide](Container/container_README_updated.md) to:
+
+1. Obtain the Spectronaut installer from an authorised source.
+2. Build a Docker image containing Spectronaut and its required dependencies.
+3. Convert the Docker image into an Apptainer/Singularity image.
+4. Test the image and verify that the Spectronaut command-line application starts correctly.
+
+After creating the image, copy it to a persistent location accessible to the compute nodes. For example:
+
+```text
+/shared/containers/spectronaut/<version>/spectronaut.sif
+```
+
+Configure `params.yaml` to use the container:
+
+```yaml
+image_path: "/shared/containers/spectronaut/<version>/spectronaut.sif"
+license: "/shared/licenses/spectronaut/<licence-file>"
+```
+
+Then execute the pipeline using the container profile:
+
+```bash
+nextflow run main.nf \
+    -profile container \
+    -params-file params.yaml
+```
+
+Ensure that the container profile is configured correctly for your HPC environment and that the licence and input/output directories are accessible from within the container.
+
+### HPC Storage and Permissions
+
+Regardless of the deployment method, consider the following requirements:
+
+* **Persistent storage:** Store the Spectronaut installation or `.sif` image in a persistent software or project directory rather than temporary storage that may be automatically cleaned.
+* **Compute-node accessibility:** Ensure that the software installation or container image, licence, input data, and output directories are accessible from the compute nodes executing the pipeline.
+* **File permissions:** Configure appropriate read and execute permissions for the software installation or container image. Follow your institution's policies for licence-file permissions.
+* **Licensing:** Obtain and activate Spectronaut according to the applicable licensing terms. Do not include licence files in the public repository or bake them into the container image.
+* **Security and distribution:** Do not commit proprietary installers, licence files, or generated container images to this public GitHub repository.
+* **Testing:** Test the installation or container before launching a large-scale analysis. Confirm that the runtime is available and that Spectronaut can execute a search using a valid licence.
+
+**Note:** A message indicating that no valid licence was found may confirm that the command-line application starts, but it does not establish that the software is activated or ready for a search. Verify licensing separately before running the full pipeline.
+
 
 ## Documentation and Community
 
