@@ -136,7 +136,7 @@ nextflow -bg run /path/to/main.nf \
          -profile container \
          -params-file /path/to/params.yaml >> nextflow_cmd.log
 ```
-> Note: If users want to run Spectronaut in its native format (i.e., SpectronautCMD.dll) without containerizing it, either set ```-profile host``` or dont use it at all.
+> Note: If users want to run Spectronaut in its native format (i.e., SpectronautCMD.dll) without containerizing it, set ```-profile host```
 
 ## Resume Failed Runs
 ```
