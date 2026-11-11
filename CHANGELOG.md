@@ -11,7 +11,7 @@ a reliable tag-to-tag change history was not available are not reconstructed her
 - Updated the SNE merging module.
 - Retained the SNE staging and merging workflow introduced in v2.9.1.
 
-## [v2.9.1]()
+## [v2.9.1](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.9.1)
 ### Changed
 - Updated DIA search processes to generate and collect individual SNE output files.
 - Improved SNE file handling and staging before merging.
