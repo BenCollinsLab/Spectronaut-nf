@@ -14,19 +14,19 @@ process MERGE_SNE {
 
 	script:
 	"""
-	set -euxo pipefail
+        set -euxo pipefail
 
-	echo "Nextflow working directory: \$PWD"
-	echo "Input SNE files: ${sne_files}"
+        echo "Nextflow working directory: \$PWD"
+        echo "Input SNE files: ${sne_files}"
 
-	mkdir -p sne_staging
+        mkdir -p sne_staging
 
-	echo "Checking input SNE files:"
-	ls -lh ${sne_files}
+        echo "Checking input SNE files:"
+        ls -lh ${sne_files}
 
-	echo "Copying SNE files to DIA output directory..."
+        echo "Copying SNE files to DIA output directory..."
 
-	cp -v ${sne_files} sne_staging/
+        cp -v ${sne_files} sne_staging/
 	
 	dotnet ${SPEC_BIN} activate ${LICENSE}
 
