@@ -15,11 +15,7 @@ process WORKFLOW_DIA {
 	path random_sleep
 
 	output:
-	path "${params.JOB_NAME}.kit", emit: kit_file    // Output directory for each rawfile
-	
-	// publishDir "${params.dia_output}", mode: 'copy'
-	
-	// sleep $(($RANDOM % 100))
+	path "**/*.sne", emit: sne_file
 
     	script:
 	"""
@@ -28,7 +24,7 @@ process WORKFLOW_DIA {
 	dotnet ${SPEC_BIN} activate ${LICENSE}	
 
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir} -r ${params.rawfile_dir}/${rawfile}\
-	-o ${params.dia_output}\
+	-o . \
 	-a ${params.LIB_IN}\
 	-n ${rawfile.getBaseName()}\
 	-fasta ${FASTA}\
@@ -53,12 +49,7 @@ process WORKFLOW_DIA_BATCH {
 	path random_sleep
 
 	output:
-	path "${params.JOB_NAME}.kit", emit: kit_file
-	
-	// Define output and error logs using task variables
-	// error = "logs/${task.process}.${task.id}.err"
-	// output = "logs/${task.process}.${task.id}.out"
-	// -n ${rawfiles.collect { it.getBaseName()}.join('_')}
+	path "**/*.sne", emit: sne_file
 
 	script:
 	"""
@@ -70,7 +61,7 @@ process WORKFLOW_DIA_BATCH {
 	
 	dotnet ${SPEC_BIN} diaanalysis -setTemp ${params.tmp_dir}\
 	${rawfiles.collect { "-r ${params.rawfile_dir}/${it}" }.join(' ')}\
-	-o ${params.dia_output}\
+	-o . \
 	-a ${params.LIB_IN}\
 	-n ${task.index}\
 	-fasta ${FASTA}\

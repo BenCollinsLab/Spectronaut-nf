@@ -8,19 +8,35 @@ process COMBINE_SNE {
         val SPEC_BIN               // First input: path to Spectronaut binary
         val LICENSE                // Second input: license key
 	val FASTA
-	val sne_files
+	path sne_files
 	val PROP_DIA
-
-        // output:
-        // path "${params.JOB_NAME}"   // Output directory for each rawfile
         
         script:
         """
-	cp -rf ${params.dia_output}/*/*.sne ${params.dia_output}
+        set -euxo pipefail
+
+        echo "Nextflow working directory: \$PWD"
+        echo "Input SNE files: ${sne_files}"
+
+        mkdir -p ${params.dia_output}
+
+        echo "Checking input SNE files:"
+        ls -lh ${sne_files}
+
+        echo "Copying SNE files to DIA output directory..."
+
+        cp -v ${sne_files} ${params.dia_output}/
+
+        echo "Checking copied SNE files:"
+        ls -lh ${params.dia_output}/*.sne
 
         dotnet ${SPEC_BIN} activate ${LICENSE}
 
-        dotnet ${SPEC_BIN} combine -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB_NAME} -fasta ${FASTA}\
+        dotnet ${SPEC_BIN} combine -setTemp ${params.tmp_dir} \
+	-d ${params.dia_output} \
+	-o ${params.dia_output} \
+	-n ${params.JOB_NAME} \
+	-fasta ${FASTA} \
 	 ${PROP_DIA ? "-s ${PROP_DIA}" : ""}
 
         """
@@ -34,21 +50,38 @@ process COMBINE_SNE_REPORT {
         val SPEC_BIN               // First input: path to Spectronaut binary
         val LICENSE                // Second input: license key
 	val FASTA
-        val sne_files
+        path sne_files
 	val REPORT
 	val PROP_DIA
 
-        // output:
-        // path "${params.JOB_NAME}"   // Output directory for each rawfile
-
         script:
         """
-	cp -rf ${params.dia_output}/*/*.sne ${params.dia_output}
+	set -euxo pipefail
+
+        echo "Nextflow working directory: \$PWD"
+        echo "Input SNE files: ${sne_files}"
+
+        mkdir -p ${params.dia_output}
+
+        echo "Checking input SNE files:"
+        ls -lh ${sne_files}
+
+        echo "Copying SNE files to DIA output directory..."
+
+        cp -v ${sne_files} ${params.dia_output}/
+
+        echo "Checking copied SNE files:"
+        ls -lh ${params.dia_output}/*.sne
 	
         dotnet ${SPEC_BIN} activate ${LICENSE}
 
-        dotnet ${SPEC_BIN} combine -setTemp ${params.tmp_dir} -d ${params.dia_output} -o ${params.dia_output} -n ${params.JOB_NAME} -fasta ${FASTA}\
-	 ${PROP_DIA ? "-s ${PROP_DIA}" : ""} -rs ${REPORT}
+        dotnet ${SPEC_BIN} combine -setTemp ${params.tmp_dir} \
+	-d ${params.dia_output} \
+	-o ${params.dia_output} \
+	-n ${params.JOB_NAME} \
+	-fasta ${FASTA}\
+	${PROP_DIA ? "-s ${PROP_DIA}" : ""} \
+	-rs ${REPORT}
 
         """
 }
