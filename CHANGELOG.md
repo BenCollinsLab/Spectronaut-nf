@@ -18,7 +18,7 @@ a reliable tag-to-tag change history was not available are not reconstructed her
 - Updated SNE merging workflow to explicitly handle input files within the Nextflow working directory.
 - Improved error handling and command execution diagnostics.
 
-## [v2.9.0]()
+## [v2.9.0](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.9.0)
 
 ### Changed
 - Updated the container profile to bind-mount the host user's `.config` directory into the Apptainer container.
