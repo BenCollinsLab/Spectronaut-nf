@@ -151,6 +151,9 @@ workflow {
 						.readLines()
 						.collect { it.trim() }
 						.findAll { it }
+						.collect { rawfile_path ->
+							file(rawfile_path)
+						}
 				}
 				.flatten()
 				.ifEmpty { error "TSV file exists but has no usable paths." }
@@ -210,9 +213,11 @@ workflow {
 
 	pulsar3_input.view { "PULSAR STEP3 INPUT: $it" }
 
-	println "FASTA: ${FASTA}"
-
-	pulsarStep3_output = PULSAR_3_LIB_BATCH(Spectronaut, SN_license, FASTA, PROP_DIA ?: "", "pulsarStep3", pulsar3_input)
+	if (batchSize > 1) {
+		pulsarStep3_output = PULSAR_3_LIB_BATCH(Spectronaut, SN_license, FASTA, PROP_DIA ?: "", "pulsarStep3", pulsar3_input)
+	} else {
+		pulsarStep3_output = PULSAR_3_LIB(Spectronaut, SN_license, FASTA, PROP_DIA ?: "", "pulsarStep3", pulsar3_input)
+	}
 
 	kit_file = COMBINE_PSAR(Spectronaut, SN_license, FASTA, pulsarStep3_output.collect(), EXT_PSAR ?: "", PROP_DIA ?: "")
 

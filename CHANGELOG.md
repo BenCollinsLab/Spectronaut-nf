@@ -5,11 +5,37 @@ This file records user-facing changes identified by comparing version tags in th
 Entries are based on repository contents and tagged commits. Older versions for which
 a reliable tag-to-tag change history was not available are not reconstructed here.
 
-## [v2.9.0]()
+## [v2.9.3](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.9.3)
+
+### Changed
+- Updated raw-file handling to convert TSV-provided paths into Nextflow file objects.
+- Added conditional selection of individual-file or batch-based Pulsar Stage 3 processing according to the configured batch size.
+- Updated Pulsar Stage 1 and Stage 3 input/output definitions to improve raw-file and PSAR file handling.
+- Improved Spectronaut command execution and file-path quoting in the Pulsar processes.
+- Reduced random sampling CPU allocation from four CPUs to one and disabled container execution for this process.
+- Added exclusive node allocation for DIA search processes.
+- Updated the host execution profile to use the Spectronaut 21 Apptainer image.
+- Updated the Nextflow manifest version to `v2.9.3`.
+
+## [v2.9.2]()
+### Changed
+- Updated the Nextflow manifest version to v2.9.2.
+- Updated the SNE merging module.
+- Retained the SNE staging and merging workflow introduced in v2.9.1.
+
+## [v2.9.1](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.9.1)
+### Changed
+- Updated DIA search processes to generate and collect individual SNE output files.
+- Improved SNE file handling and staging before merging.
+- Updated SNE merging workflow to explicitly handle input files within the Nextflow working directory.
+- Improved error handling and command execution diagnostics.
+
+## [v2.9.0](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.9.0)
 
 ### Changed
 - Updated the container profile to bind-mount the host user's `.config` directory into the Apptainer container.
 - Simplified Docker and Apptainer command examples in the container build documentation.
+
 ## [v2.8.0](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.8.0)
 
 ### Changed
