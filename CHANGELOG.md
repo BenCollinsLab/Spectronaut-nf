@@ -13,8 +13,7 @@ a reliable tag-to-tag change history was not available are not reconstructed her
 - Improved Spectronaut command execution and file-path quoting in the Pulsar processes.
 - Reduced random sampling CPU allocation from four CPUs to one and disabled container execution for this process.
 - Added exclusive node allocation for DIA search processes.
-- Updated the host execution profile to use the Spectronaut 21 Apptainer image.
-- Updated the Nextflow manifest version to `v2.9.3`.
+- Updated the host execution profile to use the Spectronaut Apptainer image (.sif).
 
 ## [v2.9.2]()
 ### Changed
