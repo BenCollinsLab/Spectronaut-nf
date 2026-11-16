@@ -6,7 +6,6 @@ Entries are based on repository contents and tagged commits. Older versions for 
 a reliable tag-to-tag change history was not available are not reconstructed here.
 
 ## [v2.9.3](https://github.com/BenCollinsLab/Spectronaut-nf/releases/tag/v2.9.3)
-
 ### Changed
 - Updated raw-file handling to convert TSV-provided paths into Nextflow file objects.
 - Added conditional selection of individual-file or batch-based Pulsar Stage 3 processing according to the configured batch size.
