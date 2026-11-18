@@ -25,11 +25,33 @@ Spectronaut_21.1.260825.94842.deb
 
 Do **not** commit the `.deb`, license files, or `.sif` image to GitHub.
 
-# Recommended method: Docker → Apptainer
+# Recommended method: Direct Apptainer build (WSL Ubuntu → Apptainer → spectronaut.sif)
 
+If your system supports unprivileged Apptainer builds, the image can be built directly from the definition file:
+
+```bash
+apptainer build spectronaut.sif spectronaut.def
+```
+
+However, some HPC systems restrict the user/group operations required by Apptainer's fakeroot environment. For example:
+
+```text
+setgroups ... Operation not permitted
+setegid ... Invalid argument
+```
+
+If this occurs, use the **Docker → Apptainer workflow above** instead.
+
+On some WSL2 installations, a direct build may work with:
+
+```bash
+sudo apptainer build --force spectronaut.sif spectronaut.def
+```
+
+This is environment-specific and is not expected to be available on a typical HPC system.
+
+# Alternative: Build the Docker image
 For HPC systems where unprivileged Apptainer builds are restricted, build the Docker image locally and then convert it to an Apptainer SIF image on the HPC.
-
-## 2. Build the Docker image
 
 From the `container/` directory:
 
@@ -144,31 +166,6 @@ dotnet dotnet /usr/lib/spectronaut/SpectronautCMD.dll
 ```
 
 The second form attempts to execute `dotnet` as a .NET application and will fail.
-
-# Alternative: Direct Apptainer build
-
-If your system supports unprivileged Apptainer builds, the image can be built directly from the definition file:
-
-```bash
-apptainer build spectronaut.sif spectronaut.def
-```
-
-However, some HPC systems restrict the user/group operations required by Apptainer's fakeroot environment. For example:
-
-```text
-setgroups ... Operation not permitted
-setegid ... Invalid argument
-```
-
-If this occurs, use the **Docker → Apptainer workflow above** instead.
-
-On some WSL2 installations, a direct build may work with:
-
-```bash
-sudo apptainer build --force spectronaut.sif spectronaut.def
-```
-
-This is environment-specific and is not expected to be available on a typical HPC system.
 
 ## License
 
