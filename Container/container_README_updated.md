@@ -13,7 +13,7 @@ container/
 
 The Spectronaut `.deb` installer is **not included in this repository** because it is proprietary software.
 
-## 1. Obtain the Spectronaut installer
+## Obtain the Spectronaut installer
 
 Obtain the required Spectronaut `.deb` from an authorised source and place it in this directory.
 
@@ -67,7 +67,7 @@ Check the image:
 docker images | grep spectronaut
 ```
 
-## 3. Test the Docker image
+## 1. Test the Docker image
 
 Check .NET:
 
@@ -90,7 +90,7 @@ Activate Spectronaut using 'activate' <serial/licenseFile> command.
 
 This is expected and confirms that the Spectronaut command can start.
 
-## 4. Save the Docker image
+## 2. Save the Docker image
 
 Save the tested Docker image as a tar archive:
 
@@ -104,7 +104,7 @@ Transfer the archive to the HPC using your normal file-transfer method, for exam
 scp spectronaut_21.1.260825.94842.tar     <HPC>:/path/to/container/
 ```
 
-## 5. Convert Docker image to Apptainer SIF
+## 3. Convert Docker image to Apptainer SIF
 
 On the HPC:
 
@@ -118,7 +118,7 @@ The final image will be:
 spectronaut.sif
 ```
 
-## 6. Test the SIF image
+## 4. Test the SIF image
 
 Check .NET:
 
